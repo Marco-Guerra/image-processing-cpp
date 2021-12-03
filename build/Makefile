@@ -5,12 +5,18 @@ LDFLAGS=-fsanitize=address
 LIBFLAGS=-lm
 
 WX_CONFIG := wx-config
+OPENCV_CONFIG := pkg-config
 
 WX_CXXFLAGS := $(shell $(WX_CONFIG) --cxxflags)
 WX_LIBS := $(shell $(WX_CONFIG) --libs)
 
+OPENCV_CXXFLAGS := $(shell $(OPENCV_CONFIG) --cflags opencv4)
+OPENCV_LIBS := $(shell $(OPENCV_CONFIG) --libs opencv4)
+
 CXXFLAGS+=$(WX_CXXFLAGS)
+CXXFLAGS+=$(OPENCV_CXXFLAGS)
 LIBFLAGS+=$(WX_LIBS)
+LIBFLAGS+=$(OPENCV_LIBS)
 
 OBJ_DIR=./objs
 #SRC_DIR := $(wildcard ../src/*)

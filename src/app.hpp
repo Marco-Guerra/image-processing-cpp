@@ -3,6 +3,7 @@
 
 #include <wx/wx.h>
 #include <wx/sizer.h>
+#include <opencv2/opencv.hpp>
 
 #include "main_frame.hpp"
 
