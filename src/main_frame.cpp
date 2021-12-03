@@ -2,7 +2,7 @@
 
 
 MainFrame::MainFrame() :
-		wxFrame(NULL, wxID_ANY, "Main Frame", wxPoint(50, 50), wxSize(800, 600)) {
+		wxFrame(NULL, wxID_ANY, "Main Frame", wxPoint(), wxSize(800, 600)) {
 
     sizer = new wxBoxSizer(wxHORIZONTAL);
 	this->SetSizer(sizer);
@@ -20,6 +20,7 @@ MainFrame::MainFrame() :
 	SetMenuBar(menuBar);
 	CreateStatusBar();
     SetStatusText("WxWidgets main frame!");
+	Centre();
 
 	Bind(wxEVT_MENU, &MainFrame::onOpen, this, ID_OPEN);
 }
