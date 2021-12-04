@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -fsanitize=address -Wall -Wextra -pedantic -O3 -D IMAGE_PATH="../images"
+CXXFLAGS=-std=c++17 -fsanitize=address -Wall -Wextra -pedantic -D IMAGE_PATH="../images"
 #-Werror
 LDFLAGS=-fsanitize=address
 LIBFLAGS=-lm
@@ -22,7 +22,7 @@ OBJ_DIR=./objs
 #SRC_DIR := $(wildcard ../src/*)
 SRC_DIR=../src
 
-SRC := $(wildcard $(SRC_DIR)/*.cpp)
+SRC := $(wildcard $(SRC_DIR)/*/*.cpp)
 OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
 EXEC=main.out

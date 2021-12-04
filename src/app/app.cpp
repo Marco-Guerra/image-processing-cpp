@@ -9,7 +9,7 @@ App::App() {
 }
 
 bool App::OnInit() {
-	// make sure to call this first
+	/*
 	Mat image = imread("../images/image.jpg");
 	if (image.empty())
 	{
@@ -26,7 +26,9 @@ bool App::OnInit() {
 	waitKey(0); // Wait for any keystroke in the window
 
 	destroyWindow(windowName); //destroy the created window
+	*/
 
+	// make sure to call this first
 	wxInitAllImageHandlers();
 	auto main = new MainFrame();
 	main->Show(true);
