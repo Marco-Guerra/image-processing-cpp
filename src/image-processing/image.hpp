@@ -2,9 +2,6 @@
 #define IMAGE
 
 #include <opencv2/opencv.hpp>
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
 #include <wx/wx.h>
 
 class Image {
@@ -21,7 +18,7 @@ public:
 	}
 
 	void medianBlur(int ksize) {
-		cv::medianBlur(mat, mat, 45);
+		cv::medianBlur(mat, mat, ksize);
 	}
 
 	const cv::Mat &getMat() const {

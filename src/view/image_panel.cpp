@@ -23,6 +23,8 @@ void ImagePanel::sizeEvent(wxSizeEvent& event) {
 void ImagePanel::paintEvent(wxPaintEvent & evt) {
     wxPaintDC dc(this);
     render(dc);
+    //Refresh();
+    //evt.Skip();
 }
 
 void ImagePanel::paintNow() {
@@ -34,7 +36,7 @@ void ImagePanel::render(wxDC& dc) {
     int new_width, new_height;
     dc.GetSize(&new_width, &new_height);
     if (new_width != widht || new_height != height) {
-        resized = wxBitmap(image.Scale(new_width, new_height /*, wxIMAGE_QUALITY_HIGH*/));
+        resized = wxBitmap(image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
         widht = new_width;
         height = new_height;
         dc.DrawBitmap(resized, 0, 0, false);
