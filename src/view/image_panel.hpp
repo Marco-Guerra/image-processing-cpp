@@ -2,6 +2,7 @@
 #define IMAGE_PANEL
 
 #include <wx/wx.h>
+#include "../utils/debug.hpp"
 
 class ImagePanel : public wxPanel {
 private:
