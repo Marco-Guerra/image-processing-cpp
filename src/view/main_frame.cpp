@@ -52,7 +52,9 @@ MainFrame::MainFrame() :
 	Bind(wxEVT_MENU, &MainFrame::onRedo, this, ID_REDO);
 	Bind(wxEVT_MENU,
 		[this](wxCommandEvent&) {
+			drawPane->paintNow();
 			Refresh();
+			Update();
 			//drawPane->Refresh();
 			//drawPane->paintNow();
 		},
@@ -98,7 +100,7 @@ void MainFrame::onRedo(wxCommandEvent& event) {
 void MainFrame::onLowPass(wxCommandEvent& event) {
 	long temp = 0;
 	int mat_filter_size;
-	auto dialog_size = new wxTextEntryDialog(this, "Entre com o tamanho da matriz");
+	auto dialog_size = new wxTextEntryDialog(this, wxT("Entre com o tamanho da máscara"));
 	//auto d = new wxAnyChoiceDialog;
 
 	dialog_size->SetTextValidator(wxFILTER_DIGITS);
@@ -141,7 +143,8 @@ void MainFrame::onThreshold(wxCommandEvent& event) {
 }
 
 void MainFrame::onGray(wxCommandEvent& event) {
-	
+	img.toGray();
+	drawPane->changeImage(img.toWxImage());
 }
 
 void MainFrame::onRoberts(wxCommandEvent& event) {

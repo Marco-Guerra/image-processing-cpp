@@ -24,21 +24,21 @@ private:
 	void onRedo(wxCommandEvent& event);
 
 	//metods
-	void onLowPass       (wxCommandEvent& event);
-	void onHighPass      (wxCommandEvent& event);
-	void onThreshold     (wxCommandEvent& event);
-	void onGray          (wxCommandEvent& event);
-	void onRoberts       (wxCommandEvent& event);
-	void onPrewitt       (wxCommandEvent& event);
-	void onSobel         (wxCommandEvent& event);
-	void onLog           (wxCommandEvent& event);
-	void onZerocross     (wxCommandEvent& event);
-	void onCanny         (wxCommandEvent& event);
-	void onNoise         (wxCommandEvent& event);
-	void onWatershed     (wxCommandEvent& event);
-	void onHistogram     (wxCommandEvent& event);
-	void onHistogramAjust(wxCommandEvent& event);
-	void onCount         (wxCommandEvent& event);
+	void onLowPass       (wxCommandEvent &event);
+	void onHighPass      (wxCommandEvent &event);
+	void onThreshold     (wxCommandEvent &event);
+	void onGray          (wxCommandEvent &event);
+	void onRoberts       (wxCommandEvent &event);
+	void onPrewitt       (wxCommandEvent &event);
+	void onSobel         (wxCommandEvent &event);
+	void onLog           (wxCommandEvent &event);
+	void onZerocross     (wxCommandEvent &event);
+	void onCanny         (wxCommandEvent &event);
+	void onNoise         (wxCommandEvent &event);
+	void onWatershed     (wxCommandEvent &event);
+	void onHistogram     (wxCommandEvent &event);
+	void onHistogramAjust(wxCommandEvent &event);
+	void onCount         (wxCommandEvent &event);
 
 	// metodos auxiliares
 	bool openImage();

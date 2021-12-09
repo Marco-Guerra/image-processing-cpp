@@ -13,6 +13,9 @@ public:
 	void loadImage(const std::string file_path, int flag = 1);
 
 	void medianBlur(int ksize);
+	void averageBlur(int ksize);
+	void canny();
+	void toGray();
 
 	const cv::Mat &getMat() const;
 	wxImage toWxImage();

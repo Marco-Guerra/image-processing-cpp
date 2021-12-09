@@ -12,6 +12,18 @@ void Image::medianBlur(int ksize) {
 	cv::medianBlur(mat, mat, ksize);
 }
 
+void Image::averageBlur(int ksize) {
+	cv::GaussianBlur(mat, mat, cv::Size(ksize, ksize), 0);
+}
+
+void Image::canny() {
+	//cv::Canny(mat, )
+}
+
+void Image::toGray() {
+	cv::cvtColor(mat, mat, cv::COLOR_BGR2GRAY);
+}
+
 const cv::Mat& Image::getMat() const {
 	return mat;
 }

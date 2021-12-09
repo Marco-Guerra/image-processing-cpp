@@ -16,6 +16,7 @@ ImagePanel::ImagePanel(wxFrame* parent, const wxString &file_name, wxBitmapType 
 
 void ImagePanel::sizeEvent(wxSizeEvent& event) {
     Refresh();
+    std::cout << "Entrei no size event\n";
     //skip the event.
     event.Skip();
 }
@@ -23,13 +24,18 @@ void ImagePanel::sizeEvent(wxSizeEvent& event) {
 void ImagePanel::paintEvent(wxPaintEvent & evt) {
     wxPaintDC dc(this);
     render(dc);
-    //Refresh();
-    //evt.Skip();
 }
 
 void ImagePanel::paintNow() {
     wxClientDC dc(this);
     render(dc);
+    std::cout << "Indo pegar o parent\n";
+    const auto parent = GetParent();
+    if (parent != nullptr) {
+        std::cout << "Indo recarregar\n";
+        parent->Refresh();
+        parent->Update();
+    }
 }
 
 void ImagePanel::render(wxDC& dc) {
@@ -43,14 +49,18 @@ void ImagePanel::render(wxDC& dc) {
     }else {
         dc.DrawBitmap(resized, 0, 0, false);
     }
+    std::cout << "Renderizei a imagem\n";
 }
 
 void ImagePanel::changeImage(const wxImage &other) {
     image = other;
+    std::cout << "Rodei o change image passando a image\n";
+    paintNow();
 }
 
 void ImagePanel::changeImage(const wxString &file_path, wxBitmapType format) {
     image.LoadFile(file_path, format);
+    std::cout << "Rodei o change image passando o caminho\n";
 }
 
 ImagePanel::~ImagePanel() {
