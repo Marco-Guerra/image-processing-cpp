@@ -11,9 +11,13 @@
 class MainFrame : public wxFrame {
 friend class MainFrameController;
 private:
-	Image img;
-	wxBoxSizer *sizer;
+	Image *img;
     ImagePanel *drawPane;
+
+	wxBoxSizer sizer;
+	wxMenu menuMetods;
+	wxMenu menuFile;
+	wxMenuBar menuBar;
 
 
 // metodos que serao ligados a eventos

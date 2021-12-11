@@ -6,6 +6,7 @@ EVT_SIZE(ImagePanel::sizeEvent)
 END_EVENT_TABLE()
 
 ImagePanel::ImagePanel(wxFrame* parent) : wxPanel(parent), image() {
+    debug ("Construindo o ImagePanel\n");
 }
 
 ImagePanel::ImagePanel(wxFrame* parent, const wxString &file_name, wxBitmapType format) :
@@ -29,20 +30,13 @@ void ImagePanel::paintEvent(wxPaintEvent & evt) {
 void ImagePanel::paintNow() {
     wxClientDC dc(this);
     render(dc);
-    debug ("Indo pegar o parent\n");
-    const auto parent = GetParent();
-    if (parent != nullptr) {
-        debug ("Indo recarregar\n");
-        parent->Refresh();
-        parent->Update();
-    }
 }
 
 void ImagePanel::render(wxDC& dc) {
     int new_width, new_height;
     dc.GetSize(&new_width, &new_height);
     if (new_width != widht || new_height != height) {
-        resized = wxBitmap(image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
+        resized = wxBitmap(image.Scale(new_width, new_height)); //wxIMAGE_QUALITY_HIGH
         widht = new_width;
         height = new_height;
         dc.DrawBitmap(resized, 0, 0, false);
@@ -50,13 +44,11 @@ void ImagePanel::render(wxDC& dc) {
         dc.DrawBitmap(resized, 0, 0, false);
     }
     debug ("Renderizei a imagem\n");
-    //Update();
 }
 
 void ImagePanel::changeImage(const wxImage &other) {
     image = other;
     debug ("Rodei o change image passando a image\n");
-    paintNow();
 }
 
 void ImagePanel::changeImage(const wxString &file_path, wxBitmapType format) {
@@ -65,4 +57,5 @@ void ImagePanel::changeImage(const wxString &file_path, wxBitmapType format) {
 }
 
 ImagePanel::~ImagePanel() {
+    debug ("Destruindo o ImagePanel\n");
 }
