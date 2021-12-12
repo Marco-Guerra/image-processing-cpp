@@ -1,6 +1,11 @@
 #include "image.hpp"
 
+Image::Image() : mat() {
+	debug("Criando a image sem parametros\n");
+}
+
 Image::Image(const std::string file_path, int flag) {
+	debug("Criando a image e carregando os dados do arquivo\n");
 	loadImage(file_path, flag);
 }
 

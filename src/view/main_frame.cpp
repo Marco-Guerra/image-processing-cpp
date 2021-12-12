@@ -3,46 +3,46 @@
 MainFrame::MainFrame() :
 		wxFrame(NULL, wxID_ANY, "Main Frame", wxPoint(), wxSize(800, 600)),
 		img(new Image("../images/full_hd.jpg")),
-		sizer(wxHORIZONTAL) {
+		drawPane(new ImagePanel(this, "../images/full_hd.jpg", wxBITMAP_TYPE_JPEG)),
+		sizer(new wxBoxSizer(wxHORIZONTAL)),
+		menu_metods(new wxMenu()),
+		menu_file(new wxMenu()),
+		menu_bar(new wxMenuBar()) {
 
 	debug("Construindo MainFrame\n");
-	SetSizer(&sizer);
 
-	drawPane = new ImagePanel(this, "../images/full_hd.jpg", wxBITMAP_TYPE_JPEG);
-	sizer.Add(drawPane, 1, wxEXPAND);
+	SetSizer(sizer);
+	sizer->Add(drawPane, 1, wxEXPAND);
 
-	//menuMetods = new wxMenu();
-	menuMetods.Append(ID_LOW_PASS, "&Realizar passa baixa...\tCtrl-L");
-	menuMetods.Append(ID_HIGH_PASS, "&Realizar passa alta...\tCtrl-H");
-	menuMetods.Append(ID_THRESHOLD, "&Realizar threshold");
-	menuMetods.Append(ID_GRAY, wxT("&Realizar transformação escala de cinsa"));
-	menuMetods.Append(ID_ROBERTS, "&a");
-	menuMetods.Append(ID_PREWITT, "&a");
-	menuMetods.Append(ID_SOBEL, "&a");
-	menuMetods.Append(ID_LOG, "&a");
-	menuMetods.Append(ID_ZEROCROSS, "&a");
-	menuMetods.Append(ID_CANNY, "&a");
-	menuMetods.Append(ID_NOISE, "&a");
-	menuMetods.Append(ID_WATERSHED, "&a");
-	menuMetods.Append(ID_HISTOGRAM, "&a");
-	menuMetods.Append(ID_HISTOGRAM_AJUST, "&a");
-	menuMetods.Append(ID_COUNT, "&a");
+	menu_metods->Append(ID_LOW_PASS, "&Realizar passa baixa...\tCtrl-L");
+	menu_metods->Append(ID_HIGH_PASS, "&Realizar passa alta...\tCtrl-H");
+	menu_metods->Append(ID_THRESHOLD, "&Realizar threshold");
+	menu_metods->Append(ID_GRAY, wxT("&Realizar transformação escala de cinsa"));
+	menu_metods->Append(ID_ROBERTS, "&a");
+	menu_metods->Append(ID_PREWITT, "&a");
+	menu_metods->Append(ID_SOBEL, "&a");
+	menu_metods->Append(ID_LOG, "&a");
+	menu_metods->Append(ID_ZEROCROSS, "&a");
+	menu_metods->Append(ID_CANNY, "&a");
+	menu_metods->Append(ID_NOISE, "&a");
+	menu_metods->Append(ID_WATERSHED, "&a");
+	menu_metods->Append(ID_HISTOGRAM, "&a");
+	menu_metods->Append(ID_HISTOGRAM_AJUST, "&a");
+	menu_metods->Append(ID_COUNT, "&a");
 
-	//menuFile = new wxMenu();
-	menuFile.Append(ID_OPEN, "Abrir uma imagem\tCtrl-O",
+	menu_file->Append(ID_OPEN, "Abrir uma imagem\tCtrl-O",
 		wxT("Selecionando essa opção será levado ao gerenciador de arquivos do sistema"));
-	menuFile.Append(ID_REFRESH, "&Recarregar o conteudo da imagem...\tCtrl-R");
-	menuFile.Append(ID_SAVE_FILE, "&Salvando a imagem atual...\tCtrl-S",
+	menu_file->Append(ID_REFRESH, "&Recarregar o conteudo da imagem...\tCtrl-R");
+	menu_file->Append(ID_SAVE_FILE, "&Salvando a imagem atual...\tCtrl-S",
 		"Abre um menu para selecionar onde salvar a imagem");
-	menuFile.AppendSeparator();
-	menuFile.Append(ID_UNDO, wxT("&Desfazer ação...\tCtrl-Z"));
-	menuFile.Append(ID_REDO, wxT("&Refazer ação...\tCtrl-Y"));
+	menu_file->AppendSeparator();
+	menu_file->Append(ID_UNDO, wxT("&Desfazer ação...\tCtrl-Z"));
+	menu_file->Append(ID_REDO, wxT("&Refazer ação...\tCtrl-Y"));
 
-	//menuBar = new wxMenuBar();
-    menuBar.Append(&menuFile, "File");
-    menuBar.Append(&menuMetods, "Metodos");
+    menu_bar->Append(menu_file, "File");
+    menu_bar->Append(menu_metods, "Metodos");
 
-	SetMenuBar(&menuBar);
+	SetMenuBar(menu_bar);
 	CreateStatusBar();
     SetStatusText("WxWidgets main frame!");
 	Centre();
@@ -51,19 +51,7 @@ MainFrame::MainFrame() :
 	Bind(wxEVT_MENU, &MainFrame::onSave, this, ID_SAVE_FILE);
 	Bind(wxEVT_MENU, &MainFrame::onUndo, this, ID_UNDO);
 	Bind(wxEVT_MENU, &MainFrame::onRedo, this, ID_REDO);
-	Bind(wxEVT_MENU,
-		[this](wxCommandEvent&) {
-			int w, h;
-			this->GetSize(&w, &h);
-			this->SetSize(w - 1, h - 1);
-			//drawPane->paintNow();
-			//Refresh();
-			//Update();
-			//drawPane->Refresh();
-			//drawPane->paintNow();
-		},
-		ID_REFRESH
-	);
+	Bind(wxEVT_MENU, &MainFrame::onRefresh, this, ID_REFRESH);
 
 	Bind(wxEVT_MENU, &MainFrame::onLowPass, this, ID_LOW_PASS);
 	Bind(wxEVT_MENU, &MainFrame::onHighPass, this, ID_HIGH_PASS);
@@ -86,7 +74,6 @@ void MainFrame::onOpen(wxCommandEvent& event) {
 	if (!openImage()) {
 		showError(wxT("Error loading file"));
 	}
-	drawPane->paintNow();
 }
 
 void MainFrame::onSave(wxCommandEvent& event) {
@@ -99,6 +86,13 @@ void MainFrame::onUndo(wxCommandEvent& event) {
 
 void MainFrame::onRedo(wxCommandEvent& event) {
 
+}
+
+void MainFrame::onRefresh(wxCommandEvent& event) {
+	int w, h;
+	this->GetSize(&w, &h);
+	this->SetSize(w - 1, h - 1);
+	//this->SetSize(w, h);
 }
 
 void MainFrame::onLowPass(wxCommandEvent& event) {
@@ -119,6 +113,8 @@ void MainFrame::onLowPass(wxCommandEvent& event) {
 		showError("O valor entrado precisa ser impar");
 	}
 	mat_filter_size = static_cast<int>(temp);
+
+	std::cout << showQuestion(wxT("Deseja usar filtro da mediana? Caso contrario será usado filtro da média")) << '\n';
 
 /*
 	auto dialog_metod = new wxMessageDialog(this, "Deseja Utilizar filtro da media?");
@@ -213,6 +209,16 @@ void MainFrame::showError(const wxString &message) {
 		this, message, wxT("Error"), wxOK | wxICON_ERROR
 	);
 	dial->ShowModal();
+}
+
+bool MainFrame::showQuestion(const wxString &message) {
+	wxMessageDialog *dial = new wxMessageDialog(
+		this,
+		message, wxT("Question"),
+		wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION
+	);
+
+	return dial->ShowModal() == wxID_YES;
 }
 
 MainFrame::~MainFrame() {

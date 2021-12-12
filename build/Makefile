@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -fsanitize=address -Wall -Wextra -pedantic -D IMAGE_PATH="../images" -DDEBUG_VAR
+CXXFLAGS=-std=c++17 -g -fsanitize=address -Wall -Wextra -pedantic -D IMAGE_PATH="../images" -DDEBUG_VAR
 #-Werror
 LDFLAGS=-fsanitize=address
 LIBFLAGS=-lm

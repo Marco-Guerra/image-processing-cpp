@@ -5,7 +5,8 @@ EVT_PAINT(ImagePanel::paintEvent)
 EVT_SIZE(ImagePanel::sizeEvent)
 END_EVENT_TABLE()
 
-ImagePanel::ImagePanel(wxFrame* parent) : wxPanel(parent), image() {
+ImagePanel::ImagePanel(wxFrame* parent) : wxPanel(parent),
+                    image_changed(false), image(), resized() {
     debug ("Construindo o ImagePanel\n");
 }
 
@@ -16,13 +17,12 @@ ImagePanel::ImagePanel(wxFrame* parent, const wxString &file_name, wxBitmapType 
 }
 
 void ImagePanel::sizeEvent(wxSizeEvent& event) {
-    Refresh();
     debug ("Entrei no size event\n");
     //skip the event.
     event.Skip();
 }
 
-void ImagePanel::paintEvent(wxPaintEvent & evt) {
+void ImagePanel::paintEvent(wxPaintEvent &event) {
     wxPaintDC dc(this);
     render(dc);
 }
@@ -35,11 +35,12 @@ void ImagePanel::paintNow() {
 void ImagePanel::render(wxDC& dc) {
     int new_width, new_height;
     dc.GetSize(&new_width, &new_height);
-    if (new_width != widht || new_height != height) {
-        resized = wxBitmap(image.Scale(new_width, new_height)); //wxIMAGE_QUALITY_HIGH
+    if (image_changed || new_width != widht || new_height != height) {
+        resized = wxBitmap(image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
         widht = new_width;
         height = new_height;
         dc.DrawBitmap(resized, 0, 0, false);
+        image_changed = false;
     }else {
         dc.DrawBitmap(resized, 0, 0, false);
     }
@@ -47,13 +48,17 @@ void ImagePanel::render(wxDC& dc) {
 }
 
 void ImagePanel::changeImage(const wxImage &other) {
-    image = other;
     debug ("Rodei o change image passando a image\n");
+    image = other;
+    image_changed = true;
+    paintNow();
 }
 
 void ImagePanel::changeImage(const wxString &file_path, wxBitmapType format) {
-    image.LoadFile(file_path, format);
     debug ("Rodei o change image passando o caminho\n");
+    image.LoadFile(file_path, format);
+    image_changed = true;
+    paintNow();
 }
 
 ImagePanel::~ImagePanel() {

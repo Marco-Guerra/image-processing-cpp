@@ -6,23 +6,26 @@
 
 class ImagePanel : public wxPanel {
 private:
+	bool image_changed;
 	wxImage image;
 	wxBitmap resized;
 	uint16_t widht, height;
+
+	void sizeEvent(wxSizeEvent &event);
+	void paintEvent(wxPaintEvent &event);
+
+    void render(wxDC& dc);
 public:
 	ImagePanel(wxFrame* parent);
 	ImagePanel(wxFrame* parent, const wxString &file_name, wxBitmapType format);
-	void sizeEvent(wxSizeEvent& event);
-	void paintEvent(wxPaintEvent & evt);
-    void paintNow();
-    void render(wxDC& dc);
 
+    void paintNow();
 	void changeImage(const wxImage &other);
 	void changeImage(const wxString &file_path, wxBitmapType format = wxBITMAP_TYPE_JPEG);
 
 	~ImagePanel();
 
-	DECLARE_EVENT_TABLE()
+	wxDECLARE_EVENT_TABLE();
 };
 
 #endif // IMAGE_PANEL

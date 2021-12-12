@@ -14,10 +14,10 @@ private:
 	Image *img;
     ImagePanel *drawPane;
 
-	wxBoxSizer sizer;
-	wxMenu menuMetods;
-	wxMenu menuFile;
-	wxMenuBar menuBar;
+	wxBoxSizer *sizer;
+	wxMenu *menu_metods;
+	wxMenu *menu_file;
+	wxMenuBar *menu_bar;
 
 
 // metodos que serao ligados a eventos
@@ -26,6 +26,8 @@ private:
 	void onSave(wxCommandEvent& event);
 	void onUndo(wxCommandEvent& event);
 	void onRedo(wxCommandEvent& event);
+	void onRefresh(wxCommandEvent& event);
+
 
 	//metods
 	void onLowPass       (wxCommandEvent &event);
@@ -47,7 +49,7 @@ private:
 	// metodos auxiliares
 	bool openImage();
 	void showError(const wxString &message);
-
+	bool showQuestion(const wxString &message);
 public:
 	MainFrame();
 	~MainFrame();
