@@ -15,8 +15,13 @@ public:
 	Image(const std::string file_path, int flag = 1);
 	void loadImage(const std::string file_path, int flag = 1);
 
+	// low pass
 	void medianBlur(int ksize);
 	void averageBlur(int ksize);
+
+	// high pass
+
+	void threshold(double min_value = 0.0, double max_value = 255.0, int type = cv::THRESH_BINARY);
 	void canny();
 	void toGray();
 

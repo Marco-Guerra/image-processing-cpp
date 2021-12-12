@@ -21,6 +21,11 @@ void Image::averageBlur(int ksize) {
 	cv::GaussianBlur(mat, mat, cv::Size(ksize, ksize), 0);
 }
 
+
+void Image::threshold(double min_value, double max_value, int type) {
+	cv::threshold(mat, mat, min_value, 255, type);
+}
+
 void Image::canny() {
 	//cv::Canny(mat, )
 }

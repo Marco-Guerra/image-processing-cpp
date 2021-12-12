@@ -61,6 +61,10 @@ void ImagePanel::changeImage(const wxString &file_path, wxBitmapType format) {
     paintNow();
 }
 
+bool ImagePanel::saveFile(const wxString &full_path) {
+    return image.SaveFile(full_path);
+}
+
 ImagePanel::~ImagePanel() {
     debug ("Destruindo o ImagePanel\n");
 }

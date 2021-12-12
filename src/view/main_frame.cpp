@@ -18,29 +18,28 @@ MainFrame::MainFrame() :
 	menu_metods->Append(ID_HIGH_PASS, "&Realizar passa alta...\tCtrl-H");
 	menu_metods->Append(ID_THRESHOLD, "&Realizar threshold");
 	menu_metods->Append(ID_GRAY, wxT("&Realizar transformação escala de cinsa"));
-	menu_metods->Append(ID_ROBERTS, "&a");
-	menu_metods->Append(ID_PREWITT, "&a");
-	menu_metods->Append(ID_SOBEL, "&a");
-	menu_metods->Append(ID_LOG, "&a");
-	menu_metods->Append(ID_ZEROCROSS, "&a");
-	menu_metods->Append(ID_CANNY, "&a");
-	menu_metods->Append(ID_NOISE, "&a");
-	menu_metods->Append(ID_WATERSHED, "&a");
-	menu_metods->Append(ID_HISTOGRAM, "&a");
-	menu_metods->Append(ID_HISTOGRAM_AJUST, "&a");
-	menu_metods->Append(ID_COUNT, "&a");
+	menu_metods->Append(ID_ROBERTS, "&Realizar");
+	menu_metods->Append(ID_PREWITT, "&Realizar");
+	menu_metods->Append(ID_SOBEL, "&Realizar");
+	menu_metods->Append(ID_LOG, "&Realizar");
+	menu_metods->Append(ID_ZEROCROSS, "&Realizar");
+	menu_metods->Append(ID_CANNY, "&Realizar");
+	menu_metods->Append(ID_NOISE, "&Realizar");
+	menu_metods->Append(ID_WATERSHED, "&Realizar");
+	menu_metods->Append(ID_HISTOGRAM, "&Realizar");
+	menu_metods->Append(ID_HISTOGRAM_AJUST, "&Realizar");
+	menu_metods->Append(ID_COUNT, "&Realizar");
 
 	menu_file->Append(ID_OPEN, "Abrir uma imagem\tCtrl-O",
 		wxT("Selecionando essa opção será levado ao gerenciador de arquivos do sistema"));
-	menu_file->Append(ID_REFRESH, "&Recarregar o conteudo da imagem...\tCtrl-R");
 	menu_file->Append(ID_SAVE_FILE, "&Salvando a imagem atual...\tCtrl-S",
 		"Abre um menu para selecionar onde salvar a imagem");
 	menu_file->AppendSeparator();
 	menu_file->Append(ID_UNDO, wxT("&Desfazer ação...\tCtrl-Z"));
 	menu_file->Append(ID_REDO, wxT("&Refazer ação...\tCtrl-Y"));
 
-    menu_bar->Append(menu_file, "File");
-    menu_bar->Append(menu_metods, "Metodos");
+    menu_bar->Append(menu_file, "Imagem");
+    menu_bar->Append(menu_metods, wxT("Métodos"));
 
 	SetMenuBar(menu_bar);
 	CreateStatusBar();
@@ -51,7 +50,6 @@ MainFrame::MainFrame() :
 	Bind(wxEVT_MENU, &MainFrame::onSave, this, ID_SAVE_FILE);
 	Bind(wxEVT_MENU, &MainFrame::onUndo, this, ID_UNDO);
 	Bind(wxEVT_MENU, &MainFrame::onRedo, this, ID_REDO);
-	Bind(wxEVT_MENU, &MainFrame::onRefresh, this, ID_REFRESH);
 
 	Bind(wxEVT_MENU, &MainFrame::onLowPass, this, ID_LOW_PASS);
 	Bind(wxEVT_MENU, &MainFrame::onHighPass, this, ID_HIGH_PASS);
@@ -72,27 +70,35 @@ MainFrame::MainFrame() :
 
 void MainFrame::onOpen(wxCommandEvent& event) {
 	if (!openImage()) {
-		showError(wxT("Error loading file"));
+		showDialog(wxT("Error loading file"), DIALOG_ERROR);
 	}
 }
 
 void MainFrame::onSave(wxCommandEvent& event) {
-
+	auto dialog = new wxFileDialog(
+		this,
+		"Escolha o nome da imagem para salvar",
+		"../images",
+		wxEmptyString,
+		_T("*.jpg"),
+		wxFD_SAVE
+	);
+	
+	if (dialog->ShowModal() == wxID_OK) {
+		if (drawPane->saveFile(dialog->GetPath())) {
+			showDialog("Imagem salva com sucesso", DIALOG_INFO);
+			return;
+		}
+	}
+	showDialog("Falha ao salvar Imagem", DIALOG_ERROR);
 }
 
 void MainFrame::onUndo(wxCommandEvent& event) {
-	showError("Rodou o Undo");
+	showDialog("Rodou o Undo", DIALOG_INFO);
 }
 
 void MainFrame::onRedo(wxCommandEvent& event) {
 
-}
-
-void MainFrame::onRefresh(wxCommandEvent& event) {
-	int w, h;
-	this->GetSize(&w, &h);
-	this->SetSize(w - 1, h - 1);
-	//this->SetSize(w, h);
 }
 
 void MainFrame::onLowPass(wxCommandEvent& event) {
@@ -110,28 +116,20 @@ void MainFrame::onLowPass(wxCommandEvent& event) {
 			return; // o usuario cancelou o menu
 		}
 		dialog_size->SetValue("3");
-		showError("O valor entrado precisa ser impar");
+		showDialog("O valor entrado precisa ser impar", DIALOG_ERROR);
 	}
 	mat_filter_size = static_cast<int>(temp);
 
-	std::cout << showQuestion(wxT("Deseja usar filtro da mediana? Caso contrario será usado filtro da média")) << '\n';
-
-/*
-	auto dialog_metod = new wxMessageDialog(this, "Deseja Utilizar filtro da media?");
-	//if (dialog_metod->SetYesNoLabels(_("&Quit"), _("&Don't quit"))) {
-	if (dialog_metod->SetYesNoLabels("Sim", "Nao")) {
-		dialog_metod->SetMessage(_("What do you want to do?"));
-	}else {// buttons have standard "Yes"/"No" values, so rephrase the question
-		dialog_metod->SetMessage(_("Do you really want to quit?"));
-	}
-	if (dialog_metod->ShowModal() == wxID_YES) {
+	if(showDialog(
+		wxT("Deseja usar filtro da mediana? Caso contrario será usado filtro da média"),
+		DIALOG_QUESTION
+	)){
+		img->medianBlur(mat_filter_size);
 	}else {
-		showError("Vc escolheu nao");
+		img->averageBlur(mat_filter_size);
 	}
-*/
-
-	img->medianBlur(mat_filter_size);
 	drawPane->changeImage(img->toWxImage());
+	showDialog(wxT("Método passa baixa realizado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onHighPass(wxCommandEvent& event) {
@@ -139,12 +137,15 @@ void MainFrame::onHighPass(wxCommandEvent& event) {
 }
 
 void MainFrame::onThreshold(wxCommandEvent& event) {
-	
+	img->threshold(127);
+	drawPane->changeImage(img->toWxImage());
+	showDialog(wxT("Método Threshold realizado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onGray(wxCommandEvent& event) {
 	img->toGray();
 	drawPane->changeImage(img->toWxImage());
+	showDialog(wxT("Transformação para escala de cinsa realizado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onRoberts(wxCommandEvent& event) {
@@ -193,7 +194,11 @@ void MainFrame::onCount(wxCommandEvent& event) {
 
 bool MainFrame::openImage() {
 	auto dialog = new wxFileDialog(
-		this, "Escolha uma imagem jpg para abrir", "../images", wxEmptyString, "*.jpg"
+		this,
+		"Escolha uma imagem jpg para abrir",
+		"../images",
+		wxEmptyString,
+		_T("*.jpg")
 	);
 	
 	if (dialog->ShowModal() == wxID_OK) {
@@ -204,21 +209,28 @@ bool MainFrame::openImage() {
 	return false;
 }
 
-void MainFrame::showError(const wxString &message) {
+bool MainFrame::showDialog(const wxString &message, DialogType type) {
+	long style;
+	wxString caption;
+
+	if (type == DIALOG_ERROR) {
+		caption = "Erro";
+		style = wxOK | wxICON_ERROR;
+	}else if (type == DIALOG_INFO) {
+		caption = wxT("Informação");
+		style = wxOK;
+	}else if (type == DIALOG_QUESTION) {
+		caption = wxT("Confirmação");
+		style = wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION;
+	}
 	auto dial = new wxMessageDialog (
-		this, message, wxT("Error"), wxOK | wxICON_ERROR
+		this, message, caption, style
 	);
-	dial->ShowModal();
-}
-
-bool MainFrame::showQuestion(const wxString &message) {
-	wxMessageDialog *dial = new wxMessageDialog(
-		this,
-		message, wxT("Question"),
-		wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION
-	);
-
-	return dial->ShowModal() == wxID_YES;
+	const auto ret = dial->ShowModal();
+	if (type == DIALOG_QUESTION) {
+		return ret == wxID_YES;
+	}
+	return ret == wxID_OK;
 }
 
 MainFrame::~MainFrame() {

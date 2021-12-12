@@ -22,6 +22,7 @@ public:
     void paintNow();
 	void changeImage(const wxImage &other);
 	void changeImage(const wxString &file_path, wxBitmapType format = wxBITMAP_TYPE_JPEG);
+	bool saveFile(const wxString &full_path);
 
 	~ImagePanel();
 

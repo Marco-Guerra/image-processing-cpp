@@ -6,12 +6,20 @@
 #include <wx/wx.h>
 
 #include "image_panel.hpp"
-#include "../image-processing/image.hpp"
+#include "../image-processing/image_history.hpp"
+
+enum DialogType {
+	DIALOG_ERROR,
+	DIALOG_INFO,
+	DIALOG_QUESTION,
+};
 
 class MainFrame : public wxFrame {
 friend class MainFrameController;
 private:
 	Image *img;
+	//ImageHistory img;
+
     ImagePanel *drawPane;
 
 	wxBoxSizer *sizer;
@@ -26,8 +34,6 @@ private:
 	void onSave(wxCommandEvent& event);
 	void onUndo(wxCommandEvent& event);
 	void onRedo(wxCommandEvent& event);
-	void onRefresh(wxCommandEvent& event);
-
 
 	//metods
 	void onLowPass       (wxCommandEvent &event);
@@ -48,8 +54,8 @@ private:
 
 	// metodos auxiliares
 	bool openImage();
-	void showError(const wxString &message);
-	bool showQuestion(const wxString &message);
+	bool showDialog(const wxString &message, DialogType type);
+
 public:
 	MainFrame();
 	~MainFrame();
@@ -58,7 +64,6 @@ public:
 enum Identifiers {
 	// file
 	ID_OPEN,
-	ID_REFRESH,
 	ID_SAVE_FILE,
 	ID_UNDO,
 	ID_REDO,
@@ -80,5 +85,6 @@ enum Identifiers {
 	ID_HISTOGRAM_AJUST,
 	ID_COUNT
 };
+
 
 #endif // MAIN_FRAME
