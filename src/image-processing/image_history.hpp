@@ -7,16 +7,16 @@
 
 class ImageHistory {
 private:
-	std::list<Image> history;
-	std::list<Image>::const_iterator current;
+	std::list<Image *> history;
+	std::list<Image *>::const_iterator current;
 
-	std::list<Image>::const_iterator getLast();
+	std::list<Image *>::const_iterator getLast();
 public:
 	ImageHistory();
-	ImageHistory(const Image& fisrt);
+	ImageHistory(Image *fisrt);
 
 	// Insere no fim da lista
-	void add(const Image& fisrt);
+	void add(Image *fisrt);
 
 	// remove desde o iterador ate o fim
 	void remove();
@@ -25,7 +25,9 @@ public:
 	bool next();
 	bool previus();
 
-	const Image& getCurrent();
+	const Image* getCurrent() const;
+
+	void clean();
 	~ImageHistory();
 };
 

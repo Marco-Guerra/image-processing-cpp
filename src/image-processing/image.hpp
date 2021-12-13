@@ -10,14 +10,17 @@ class Image {
 private:
 	cv::Mat mat;
 
+	cv::Mat& getWritableMat();
+
 public:
 	Image();
 	Image(const std::string file_path, int flag = 1);
+	Image(const wxImage &wx);
 	void loadImage(const std::string file_path, int flag = 1);
 
 	// low pass
-	void medianBlur(int ksize);
-	void averageBlur(int ksize);
+	Image* medianBlur(int ksize) const;
+	Image* averageBlur(int ksize) const;
 
 	// high pass
 
@@ -26,7 +29,7 @@ public:
 	void toGray();
 
 	const cv::Mat &getMat() const;
-	wxImage toWxImage();
+	wxImage toWxImage() const;
 };
 
 #endif // IMAGE

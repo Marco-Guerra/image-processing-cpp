@@ -1,15 +1,16 @@
 #include "main_frame.hpp"
 
 MainFrame::MainFrame() :
-		wxFrame(NULL, wxID_ANY, "Main Frame", wxPoint(), wxSize(800, 600)),
-		img(new Image("../images/full_hd.jpg")),
-		drawPane(new ImagePanel(this, "../images/full_hd.jpg", wxBITMAP_TYPE_JPEG)),
-		sizer(new wxBoxSizer(wxHORIZONTAL)),
-		menu_metods(new wxMenu()),
-		menu_file(new wxMenu()),
-		menu_bar(new wxMenuBar()) {
+	wxFrame(NULL, wxID_ANY, "Main Frame", wxPoint(), wxSize(800, 600)),
+	img_history(),
+	drawPane(new ImagePanel(this, INITIAL_IMAGE, wxBITMAP_TYPE_JPEG)),
+	sizer(new wxBoxSizer(wxHORIZONTAL)),
+	menu_metods(new wxMenu()),
+	menu_file(new wxMenu()),
+	menu_bar(new wxMenuBar()) {
 
 	debug("Construindo MainFrame\n");
+	img_history.add(new Image(drawPane->getImage()));
 
 	SetSizer(sizer);
 	sizer->Add(drawPane, 1, wxEXPAND);
@@ -78,7 +79,7 @@ void MainFrame::onSave(wxCommandEvent& event) {
 	auto dialog = new wxFileDialog(
 		this,
 		"Escolha o nome da imagem para salvar",
-		"../images",
+		DEFAULT_IMAGE_FOLDER,
 		wxEmptyString,
 		_T("*.jpg"),
 		wxFD_SAVE
@@ -119,17 +120,22 @@ void MainFrame::onLowPass(wxCommandEvent& event) {
 		showDialog("O valor entrado precisa ser impar", DIALOG_ERROR);
 	}
 	mat_filter_size = static_cast<int>(temp);
-
-	if(showDialog(
+	const bool resp = showDialog (
 		wxT("Deseja usar filtro da mediana? Caso contrario será usado filtro da média"),
 		DIALOG_QUESTION
-	)){
-		img->medianBlur(mat_filter_size);
+	);
+
+	if(resp){
+		img_history.add(img_history.getCurrent()->medianBlur(mat_filter_size));
 	}else {
-		img->averageBlur(mat_filter_size);
+		img_history.add(img_history.getCurrent()->averageBlur(mat_filter_size));
 	}
-	drawPane->changeImage(img->toWxImage());
-	showDialog(wxT("Método passa baixa realizado com sucesso"), DIALOG_INFO);
+	drawPane->changeImage(img_history.getCurrent()->toWxImage());
+
+	wxString message = wxT("Método passa baixa (");
+	message += (resp? wxT("Mediana") : wxT("Média"));
+	message += ") realizado com sucesso";
+	showDialog(message, DIALOG_INFO);
 }
 
 void MainFrame::onHighPass(wxCommandEvent& event) {
@@ -137,14 +143,15 @@ void MainFrame::onHighPass(wxCommandEvent& event) {
 }
 
 void MainFrame::onThreshold(wxCommandEvent& event) {
-	img->threshold(127);
-	drawPane->changeImage(img->toWxImage());
+	//img_history.add(img_history.getCurrent())
+	//img->threshold(127);
+	//drawPane->changeImage(img->toWxImage());
 	showDialog(wxT("Método Threshold realizado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onGray(wxCommandEvent& event) {
-	img->toGray();
-	drawPane->changeImage(img->toWxImage());
+	//img->toGray();
+	//drawPane->changeImage(img->toWxImage());
 	showDialog(wxT("Transformação para escala de cinsa realizado com sucesso"), DIALOG_INFO);
 }
 
@@ -196,15 +203,25 @@ bool MainFrame::openImage() {
 	auto dialog = new wxFileDialog(
 		this,
 		"Escolha uma imagem jpg para abrir",
-		"../images",
+		DEFAULT_IMAGE_FOLDER,
 		wxEmptyString,
 		_T("*.jpg")
 	);
 	
 	if (dialog->ShowModal() == wxID_OK) {
-		img->loadImage(dialog->GetPath().ToStdString());
-		drawPane->changeImage(img->toWxImage());
-		return true;
+		auto path = dialog->GetPath().ToStdString();
+		const bool resp = showDialog(
+			"Deseja abrir a imagem " +
+			path +
+			wxT("? Todos os métodos executados na imagem anterior serão perdidos."),
+			DIALOG_QUESTION
+		);
+		if (resp) {
+			img_history.clean();
+			img_history.add(new Image(path));
+			drawPane->changeImage(img_history.getCurrent()->toWxImage());
+			return true;
+		}
 	}
 	return false;
 }

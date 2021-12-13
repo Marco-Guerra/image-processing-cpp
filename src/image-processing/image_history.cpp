@@ -1,6 +1,6 @@
 #include "image_history.hpp"
 
-std::list<Image>::const_iterator ImageHistory::getLast() {
+std::list<Image *>::const_iterator ImageHistory::getLast() {
 	auto temp = history.cend();
 	return --temp;
 }
@@ -8,11 +8,14 @@ std::list<Image>::const_iterator ImageHistory::getLast() {
 ImageHistory::ImageHistory() : history(), current() {
 }
 
-ImageHistory::ImageHistory(const Image& fisrt) : history(), current() {
+ImageHistory::ImageHistory(Image *fisrt) : history(), current() {
 	add(fisrt);
 }
 
-void ImageHistory::add(const Image& fisrt) {
+void ImageHistory::add(Image *fisrt) {
+	if (!isOnTop()) {
+		remove();
+	}
 	history.push_back(fisrt);
 	current = getLast();
 }
@@ -22,6 +25,9 @@ void ImageHistory::remove() {
 }
 
 bool ImageHistory::isOnTop() {
+	if (history.empty()) {
+		return true;
+	}
 	return current == getLast();
 }
 
@@ -41,10 +47,17 @@ bool ImageHistory::previus() {
 	return true;
 }
 
-const Image& ImageHistory::getCurrent() {
+const Image* ImageHistory::getCurrent() const {
 	return *current;
 }
 
+void ImageHistory::clean() {
+    for (auto it : history) {
+		delete it;
+	}
+	history.clear();
+}
+
 ImageHistory::~ImageHistory() {
-    
+	clean();
 }

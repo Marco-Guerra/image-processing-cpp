@@ -14,11 +14,13 @@ enum DialogType {
 	DIALOG_QUESTION,
 };
 
+#define DEFAULT_IMAGE_FOLDER "../images"
+#define INITIAL_IMAGE (const char  *)(DEFAULT_IMAGE_FOLDER "/full_hd.jpg")
+
 class MainFrame : public wxFrame {
 friend class MainFrameController;
 private:
-	Image *img;
-	//ImageHistory img;
+	ImageHistory img_history;
 
     ImagePanel *drawPane;
 

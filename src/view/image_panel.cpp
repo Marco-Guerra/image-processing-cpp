@@ -65,6 +65,10 @@ bool ImagePanel::saveFile(const wxString &full_path) {
     return image.SaveFile(full_path);
 }
 
+const wxImage& ImagePanel::getImage() const {
+    return image;
+}
+
 ImagePanel::~ImagePanel() {
     debug ("Destruindo o ImagePanel\n");
 }

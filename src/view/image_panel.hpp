@@ -24,6 +24,8 @@ public:
 	void changeImage(const wxString &file_path, wxBitmapType format = wxBITMAP_TYPE_JPEG);
 	bool saveFile(const wxString &full_path);
 
+	const wxImage& getImage() const;
+
 	~ImagePanel();
 
 	wxDECLARE_EVENT_TABLE();
