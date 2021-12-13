@@ -70,8 +70,10 @@ MainFrame::MainFrame() :
 }
 
 void MainFrame::onOpen(wxCommandEvent& event) {
-	if (!openImage()) {
-		showDialog(wxT("Error loading file"), DIALOG_ERROR);
+	if (openImage()) {
+		updateImage();
+	}else {
+		showDialog(wxT("Erro ao carregar a imagem"), DIALOG_ERROR);
 	}
 }
 
@@ -95,20 +97,38 @@ void MainFrame::onSave(wxCommandEvent& event) {
 }
 
 void MainFrame::onUndo(wxCommandEvent& event) {
-	showDialog("Rodou o Undo", DIALOG_INFO);
+	if (img_history.previus()) {
+		updateImage();
+		showDialog("Desfazer executado com sucesso", DIALOG_INFO);
+	}else {
+		showDialog(
+			wxT("Falha ao executar o desfazer, você já está no último elemento"),
+			DIALOG_ERROR
+		);
+	}
 }
 
 void MainFrame::onRedo(wxCommandEvent& event) {
-
+	if (img_history.next()) {
+		updateImage();
+		showDialog("Refazer executado com sucesso", DIALOG_INFO);
+	}else {
+		showDialog(
+			wxT("Falha ao executar o refazer, você já está no topo da pilha"),
+			DIALOG_ERROR
+		);
+	}
 }
 
 void MainFrame::onLowPass(wxCommandEvent& event) {
 	long temp = 0;
 	int mat_filter_size;
-	auto dialog_size = new wxTextEntryDialog(this, wxT("Entre com o tamanho da máscara"));
-	//auto d = new wxAnyChoiceDialog;
-
+	auto dialog_size = new wxTextEntryDialog(
+		this,
+		wxT("Entre com o tamanho da máscara")
+	);
 	dialog_size->SetTextValidator(wxFILTER_DIGITS);
+
 	while (1) {
 		if (dialog_size->ShowModal() == wxID_OK) {
 			dialog_size->GetValue().ToLong(&temp);
@@ -130,11 +150,11 @@ void MainFrame::onLowPass(wxCommandEvent& event) {
 	}else {
 		img_history.add(img_history.getCurrent()->averageBlur(mat_filter_size));
 	}
-	drawPane->changeImage(img_history.getCurrent()->toWxImage());
+	updateImage();
 
 	wxString message = wxT("Método passa baixa (");
 	message += (resp? wxT("Mediana") : wxT("Média"));
-	message += ") realizado com sucesso";
+	message += ") executado com sucesso";
 	showDialog(message, DIALOG_INFO);
 }
 
@@ -146,13 +166,16 @@ void MainFrame::onThreshold(wxCommandEvent& event) {
 	//img_history.add(img_history.getCurrent())
 	//img->threshold(127);
 	//drawPane->changeImage(img->toWxImage());
-	showDialog(wxT("Método Threshold realizado com sucesso"), DIALOG_INFO);
+	showDialog(wxT("Método Threshold executado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onGray(wxCommandEvent& event) {
 	//img->toGray();
 	//drawPane->changeImage(img->toWxImage());
-	showDialog(wxT("Transformação para escala de cinsa realizado com sucesso"), DIALOG_INFO);
+	showDialog(
+		wxT("Transformação para escala de cinsa executado com sucesso"),
+		DIALOG_INFO
+	);
 }
 
 void MainFrame::onRoberts(wxCommandEvent& event) {
@@ -219,7 +242,6 @@ bool MainFrame::openImage() {
 		if (resp) {
 			img_history.clean();
 			img_history.add(new Image(path));
-			drawPane->changeImage(img_history.getCurrent()->toWxImage());
 			return true;
 		}
 	}
@@ -248,6 +270,10 @@ bool MainFrame::showDialog(const wxString &message, DialogType type) {
 		return ret == wxID_YES;
 	}
 	return ret == wxID_OK;
+}
+
+void MainFrame::updateImage() {
+	drawPane->changeImage(img_history.getCurrent()->toWxImage());
 }
 
 MainFrame::~MainFrame() {

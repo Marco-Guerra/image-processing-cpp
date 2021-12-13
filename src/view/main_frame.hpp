@@ -57,6 +57,8 @@ private:
 	// metodos auxiliares
 	bool openImage();
 	bool showDialog(const wxString &message, DialogType type);
+	// Manda a imagem atual do img_history para a tela
+	void updateImage();
 
 public:
 	MainFrame();

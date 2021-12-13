@@ -30,7 +30,9 @@ Image* Image::medianBlur(int ksize) const {
 }
 
 Image* Image::averageBlur(int ksize) const {
-	//cv::GaussianBlur(mat, mat, cv::Size(ksize, ksize), 0);
+	auto dest = new Image();
+	cv::GaussianBlur(mat, dest->getWritableMat(), cv::Size(ksize, ksize), 0);
+	return dest;
 }
 
 
