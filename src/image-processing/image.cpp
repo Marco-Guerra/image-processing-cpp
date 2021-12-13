@@ -10,9 +10,8 @@ Image::Image(const std::string file_path, int flag) {
 }
 
 Image::Image(const wxImage &wx) :
-	mat(cv::Size(wx.GetWidth(),wx.GetHeight()),CV_8UC3,wx.GetData()) {
+	mat(cv::Size(wx.GetWidth(),wx.GetHeight()), CV_8UC3, wx.GetData()) {
 	debug("Criando a image e carregando os dados a partir da wxImage\n");
-	cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
 }
 
 cv::Mat& Image::getWritableMat() {
@@ -36,16 +35,80 @@ Image* Image::averageBlur(int ksize) const {
 }
 
 
-void Image::threshold(double min_value, double max_value, int type) {
-	cv::threshold(mat, mat, min_value, 255, type);
+Image* Image::threshold(double min_value, double max_value, int type) const {
+	auto dest = new Image();
+	cv::threshold(mat, dest->getWritableMat(), min_value, 255, type);
+	return dest;
 }
 
-void Image::canny() {
+Image* Image::canny() const {
+	auto dest = new Image();
 	//cv::Canny(mat, )
+	return dest;
 }
 
-void Image::toGray() {
-	cv::cvtColor(mat, mat, cv::COLOR_BGR2GRAY);
+Image* Image::toGray() const {
+	auto dest = new Image();
+	cv::cvtColor(mat, dest->getWritableMat(), cv::COLOR_BGR2GRAY);
+	return dest;
+}
+
+Image* Image::roberts() const {
+
+}
+
+Image* Image::prewitt() const {
+
+}
+
+Image* Image::sobel() const {
+
+}
+
+Image* Image::log() const {
+
+}
+
+Image* Image::zerocross() const {
+
+}
+
+Image* Image::noise(uint64_t qnt) const {
+	int r, c;
+	const int rows = mat.rows;
+	const int cols = mat.cols;
+	const uint64_t img_pixels = rows * cols;
+
+	auto ret = new Image();
+	auto &dest = ret->getWritableMat();
+	dest = mat;
+
+	for (uint64_t i = 0; i < qnt; i++) {
+		r = rand() % rows;
+		c = rand() % cols;
+		dest.at<cv::Vec3b>(r, c) = cv::Vec3b(0, 0, 0);
+		r = rand() % rows;
+		c = rand() % cols;
+		dest.at<cv::Vec3b>(r, c) = cv::Vec3b(255, 255, 255);
+	}
+	
+	return ret;
+}
+
+Image* Image::watershed() const {
+
+}
+
+Image* Image::histogram() const {
+
+}
+
+Image* Image::histogramAjus() const {
+
+}
+
+Image* Image::count() const {
+
 }
 
 const cv::Mat& Image::getMat() const {

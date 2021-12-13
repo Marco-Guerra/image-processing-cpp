@@ -24,9 +24,19 @@ public:
 
 	// high pass
 
-	void threshold(double min_value = 0.0, double max_value = 255.0, int type = cv::THRESH_BINARY);
-	void canny();
-	void toGray();
+	Image* threshold(double min_value = 0.0, double max_value = 255.0, int type = cv::THRESH_BINARY) const;
+	Image* canny() const;
+	Image* toGray() const;
+	Image* roberts() const;
+	Image* prewitt() const;
+	Image* sobel() const;
+    Image* log() const;
+    Image* zerocross() const;
+    Image* noise(uint64_t qnt) const;
+    Image* watershed() const;
+    Image* histogram() const;
+    Image* histogramAjus() const;
+    Image* count() const;
 
 	const cv::Mat &getMat() const;
 	wxImage toWxImage() const;

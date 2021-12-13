@@ -1,7 +1,7 @@
 #include "main_frame.hpp"
 
 MainFrame::MainFrame() :
-	wxFrame(NULL, wxID_ANY, "Main Frame", wxPoint(), wxSize(800, 600)),
+	wxFrame(NULL, wxID_ANY, "Image procecing++", wxPoint(), wxSize(800, 600)),
 	img_history(),
 	drawPane(new ImagePanel(this, INITIAL_IMAGE, wxBITMAP_TYPE_JPEG)),
 	sizer(new wxBoxSizer(wxHORIZONTAL)),
@@ -25,7 +25,7 @@ MainFrame::MainFrame() :
 	menu_metods->Append(ID_LOG, "&Realizar");
 	menu_metods->Append(ID_ZEROCROSS, "&Realizar");
 	menu_metods->Append(ID_CANNY, "&Realizar");
-	menu_metods->Append(ID_NOISE, "&Realizar");
+	menu_metods->Append(ID_NOISE, "&Adicionar ruido (Salt and Peper)");
 	menu_metods->Append(ID_WATERSHED, "&Realizar");
 	menu_metods->Append(ID_HISTOGRAM, "&Realizar");
 	menu_metods->Append(ID_HISTOGRAM_AJUST, "&Realizar");
@@ -163,15 +163,14 @@ void MainFrame::onHighPass(wxCommandEvent& event) {
 }
 
 void MainFrame::onThreshold(wxCommandEvent& event) {
-	//img_history.add(img_history.getCurrent())
-	//img->threshold(127);
-	//drawPane->changeImage(img->toWxImage());
-	showDialog(wxT("Método Threshold executado com sucesso"), DIALOG_INFO);
+	img_history.add(img_history.getCurrent()->threshold(127));
+	updateImage();
+	showDialog(wxT("Método threshold executado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onGray(wxCommandEvent& event) {
-	//img->toGray();
-	//drawPane->changeImage(img->toWxImage());
+	img_history.add(img_history.getCurrent()->toGray());
+	updateImage();
 	showDialog(
 		wxT("Transformação para escala de cinsa executado com sucesso"),
 		DIALOG_INFO
@@ -203,7 +202,9 @@ void MainFrame::onCanny(wxCommandEvent& event) {
 }
 
 void MainFrame::onNoise(wxCommandEvent& event) {
-	
+	img_history.add(img_history.getCurrent()->noise(5000));
+	updateImage();
+	showDialog(wxT("Ruído salt and peper adicionado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onWatershed(wxCommandEvent& event) {

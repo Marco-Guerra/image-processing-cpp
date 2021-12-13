@@ -29,6 +29,7 @@ bool App::OnInit() {
 	*/
 
 	// make sure to call this first
+	srand (time(NULL));
 	wxInitAllImageHandlers();
 	auto main = new MainFrame();
 	main->Show(true);
