@@ -2,7 +2,7 @@
 ## Métodos a serem implementados:
 - [X] Limiarização (Threshold)
 - [X] Escala de Cinza
-- [ ] Passa-Alta
+- [X] Passa-Alta
 - [X] Passa-Baixa
 - [ ] Roberts
 - [ ] Prewitt
