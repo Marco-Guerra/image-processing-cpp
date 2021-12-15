@@ -1,9 +1,9 @@
 # image-processing-cpp
 ## Métodos a serem implementados:
-- [ ] Limiarização (Threshold)
-- [ ] Escala de Cinza
+- [X] Limiarização (Threshold)
+- [X] Escala de Cinza
 - [ ] Passa-Alta
-- [ ] Passa-Baixa
+- [X] Passa-Baixa
 - [ ] Roberts
 - [ ] Prewitt
 - [ ] Sobel
