@@ -12,6 +12,7 @@ Image::Image(const std::string file_path, int flag) {
 Image::Image(const wxImage &wx) :
 	mat(cv::Size(wx.GetWidth(),wx.GetHeight()), CV_8UC3, wx.GetData()) {
 	debug("Criando a image e carregando os dados a partir da wxImage\n");
+	//cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
 }
 
 cv::Mat& Image::getWritableMat() {
@@ -19,7 +20,7 @@ cv::Mat& Image::getWritableMat() {
 }
 
 void Image::loadImage(const std::string file_path, int flag) {
-	mat = cv::imread(file_path, flag);
+	mat = cv::imread(file_path, flag); //cv::IMREAD_ANYCOLOR
 }
 
 Image* Image::medianBlur(int ksize) const {
@@ -34,10 +35,19 @@ Image* Image::averageBlur(int ksize) const {
 	return dest;
 }
 
+Image* Image::reinforce(double r) const {
+	auto dest = new Image();
+	dest->getWritableMat() = (mat * (r - 1));
+	return dest;
+}
+
+void Image::reinforce(double r) {
+	this->mat *= (r - 1);
+}
 
 Image* Image::threshold(double min_value, double max_value, int type) const {
 	auto dest = new Image();
-	cv::threshold(mat, dest->getWritableMat(), min_value, 255, type);
+	cv::threshold(mat, dest->getWritableMat(), min_value, max_value, type);
 	return dest;
 }
 
@@ -91,7 +101,7 @@ Image* Image::noise(uint64_t qnt) const {
 		c = rand() % cols;
 		dest.at<cv::Vec3b>(r, c) = cv::Vec3b(255, 255, 255);
 	}
-	
+
 	return ret;
 }
 
@@ -116,19 +126,26 @@ const cv::Mat& Image::getMat() const {
 }
 
 wxImage Image::toWxImage() const {
-	cv::Mat im2;
+	cv::Mat temp_mat;
 	if (mat.channels() == 1) {
-		cv::cvtColor(mat, im2, cv::COLOR_GRAY2RGB);
+		debug("Convertendo para imagem com 1 canal\n");
+		cv::cvtColor(mat, temp_mat, cv::COLOR_GRAY2RGB);
 	}
 	else if (mat.channels() == 4) {
-		cv::cvtColor(mat, im2, cv::COLOR_BGRA2RGB);
+		debug("Convertendo para imagem com 4 canais\n");
+		cv::cvtColor(mat, temp_mat, cv::COLOR_BGRA2RGB);
 	}
-	else {
-		cv::cvtColor(mat, im2, cv::COLOR_BGR2RGB);
+	else { // 3 canais = BGR no opencv
+		debug("Convertendo para imagem com " << mat.channels() << " canais\n");
+		// eu precisava copiar os dados sem fazer mudanca de cor,
+		// mas tava dando seg foult
+		cv::cvtColor(mat, temp_mat, cv::COLOR_BGR2RGB);
+		//cv::cvtColor(temp_mat, temp_mat, cv::COLOR_RGB2BGR);
+		//temp_mat = cv::Mat(mat, true);
 	}
 
-	size_t imsize = im2.rows * im2.cols * im2.channels();
-	wxImage wx(im2.cols, im2.rows, (unsigned char *)malloc(imsize), false);
-	memcpy(wx.GetData(), im2.data, imsize);
+	size_t img_size = temp_mat.rows * temp_mat.cols * temp_mat.channels();
+	wxImage wx(temp_mat.cols, temp_mat.rows, (unsigned char *)malloc(img_size), false);
+	memcpy(wx.GetData(), temp_mat.data, img_size);
 	return wx;
 }

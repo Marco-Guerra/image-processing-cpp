@@ -159,13 +159,79 @@ void MainFrame::onLowPass(wxCommandEvent& event) {
 }
 
 void MainFrame::onHighPass(wxCommandEvent& event) {
+	long temp = 0;
+	int mat_filter_size;
+	auto dialog_size = new wxTextEntryDialog(
+		this,
+		wxT("Entre com o tamanho da máscara")
+	);
+	dialog_size->SetTextValidator(wxFILTER_DIGITS);
 
+	while (1) {
+		if (dialog_size->ShowModal() == wxID_OK) {
+			dialog_size->GetValue().ToLong(&temp);
+			if (temp % 2) break;
+		}else {
+			return; // o usuario cancelou o menu
+		}
+		dialog_size->SetValue("3");
+		showDialog("O valor entrado precisa ser impar", DIALOG_ERROR);
+	}
+	mat_filter_size = static_cast<int>(temp);
+	auto img_temp = img_history.getCurrent()->averageBlur(mat_filter_size);
+
+	const bool resp = showDialog (
+		wxT("Executou-se o filtro da média deseja usar reforçar a imagem?"),
+		DIALOG_QUESTION
+	);
+	if (resp) {
+		double reforce;
+		auto dialog_size = new wxTextEntryDialog (
+			this,
+			wxT("Entre com o valor do reforço")
+		);
+		dialog_size->SetTextValidator(wxFILTER_NUMERIC);
+		if (dialog_size->ShowModal() == wxID_OK) {
+			dialog_size->GetValue().ToDouble(&reforce);
+		}else {
+			delete img_temp;
+			return; // o usuario cancelou o menu
+		}
+		img_temp->reinforce(reforce);
+	}
+
+	img_history.add(img_temp);
+	updateImage();
+	wxString message = wxT("Método passa alta (");
+	message += (resp? wxT("Alto Reforço") : wxT("Média"));
+	message += ") executado com sucesso";
+	showDialog(message, DIALOG_INFO);
 }
 
 void MainFrame::onThreshold(wxCommandEvent& event) {
-	img_history.add(img_history.getCurrent()->threshold(127));
+	long temp;
+	auto dialog_size = new wxTextEntryDialog(
+		this,
+		wxT("Entre com o valor do threshold [0, 255]")
+	);
+	dialog_size->SetTextValidator(wxFILTER_DIGITS);
+	while (1) {
+		if (dialog_size->ShowModal() == wxID_OK) {
+			dialog_size->GetValue().ToLong(&temp);
+			if (temp <= 255) break;
+		}else {
+			return; // o usuario cancelou o menu
+		}
+		dialog_size->SetValue("127");
+		showDialog(
+			"O valor entrado precisa estar dentro da faixa [0, 255]",
+			DIALOG_ERROR
+		);
+	}
+	const uint8_t menu_val = static_cast<uint8_t>(temp);
+	img_history.add(img_history.getCurrent()->threshold(menu_val));
 	updateImage();
-	showDialog(wxT("Método threshold executado com sucesso"), DIALOG_INFO);
+	showDialog(wxT("Método de Limiarização executado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onGray(wxCommandEvent& event) {

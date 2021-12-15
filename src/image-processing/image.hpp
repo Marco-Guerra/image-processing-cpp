@@ -23,6 +23,8 @@ public:
 	Image* averageBlur(int ksize) const;
 
 	// high pass
+	Image* reinforce(double r) const;
+	void reinforce(double r);
 
 	Image* threshold(double min_value = 0.0, double max_value = 255.0, int type = cv::THRESH_BINARY) const;
 	Image* canny() const;

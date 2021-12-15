@@ -2,7 +2,8 @@
 
 std::list<Image *>::const_iterator ImageHistory::getLast() {
 	auto temp = history.cend();
-	return --temp;
+	temp--;
+	return temp;
 }
 
 ImageHistory::ImageHistory() : history(), current() {
@@ -21,6 +22,8 @@ void ImageHistory::add(Image *fisrt) {
 }
 
 void ImageHistory::remove() {
+	current++;
+	// apaga do current incluindo o mesmo ate o fim
     history.erase(current, history.cend());
 }
 
