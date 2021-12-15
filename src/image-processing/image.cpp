@@ -12,7 +12,7 @@ Image::Image(const std::string file_path, int flag) {
 Image::Image(const wxImage &wx) :
 	mat(cv::Size(wx.GetWidth(),wx.GetHeight()), CV_8UC3, wx.GetData()) {
 	debug("Criando a image e carregando os dados a partir da wxImage\n");
-	//cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
+	cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
 }
 
 cv::Mat& Image::getWritableMat() {
