@@ -6,11 +6,11 @@
 - [X] Passa-Baixa
 - [ ] Roberts
 - [ ] Prewitt
-- [ ] Sobel
+- [X] Sobel
 - [ ] Log
 - [ ] Zerocross
-- [ ] Canny
-- [ ] Ruídos(salt & pepper, etc)
+- [X] Canny
+- [X] Ruídos(salt & pepper, etc)
 - [ ] Watershed
 - [ ] Histograma (Escala de cinza)
 - [ ] Ajuste adaptativo de histograma
