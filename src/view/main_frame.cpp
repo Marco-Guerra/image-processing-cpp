@@ -1,8 +1,8 @@
 #include "main_frame.hpp"
 
 MainFrame::MainFrame() :
-	wxFrame(NULL, wxID_ANY, "Image procecing++", wxPoint(), wxSize(800, 600)),
-	img_history(),
+	wxFrame(NULL, wxID_ANY, "Image processing++", wxPoint(), wxSize(800, 600)),
+	img_history(new Image(INITIAL_IMAGE)),
 	drawPane(new ImagePanel(this, INITIAL_IMAGE, wxBITMAP_TYPE_JPEG)),
 	sizer(new wxBoxSizer(wxHORIZONTAL)),
 	menu_metods(new wxMenu()),
@@ -10,7 +10,6 @@ MainFrame::MainFrame() :
 	menu_bar(new wxMenuBar()) {
 
 	debug("Construindo MainFrame\n");
-	img_history.add(new Image(drawPane->getImage()));
 
 	SetSizer(sizer);
 	sizer->Add(drawPane, 1, wxEXPAND);
@@ -21,10 +20,10 @@ MainFrame::MainFrame() :
 	menu_metods->Append(ID_GRAY, wxT("&Realizar transformação escala de cinsa"));
 	menu_metods->Append(ID_ROBERTS, "&Realizar");
 	menu_metods->Append(ID_PREWITT, "&Realizar");
-	menu_metods->Append(ID_SOBEL, "&Realizar");
+	menu_metods->Append(ID_SOBEL, wxT("&Detectar bordas com método de sobel"));
 	menu_metods->Append(ID_LOG, "&Realizar");
 	menu_metods->Append(ID_ZEROCROSS, "&Realizar");
-	menu_metods->Append(ID_CANNY, "&Realizar");
+	menu_metods->Append(ID_CANNY, wxT("&Detectar bordas com método de canny"));
 	menu_metods->Append(ID_NOISE, "&Adicionar ruido (Salt and Peper)");
 	menu_metods->Append(ID_WATERSHED, "&Realizar");
 	menu_metods->Append(ID_HISTOGRAM, "&Realizar");
@@ -123,20 +122,20 @@ void MainFrame::onRedo(wxCommandEvent& event) {
 void MainFrame::onLowPass(wxCommandEvent& event) {
 	long temp = 0;
 	int mat_filter_size;
-	auto dialog_size = new wxTextEntryDialog(
+	auto dialog = wxTextEntryDialog(
 		this,
 		wxT("Entre com o tamanho da máscara")
 	);
-	dialog_size->SetTextValidator(wxFILTER_DIGITS);
+	dialog.SetTextValidator(wxFILTER_DIGITS);
 
 	while (1) {
-		if (dialog_size->ShowModal() == wxID_OK) {
-			dialog_size->GetValue().ToLong(&temp);
+		if (dialog.ShowModal() == wxID_OK) {
+			dialog.GetValue().ToLong(&temp);
 			if (temp % 2) break;
 		}else {
 			return; // o usuario cancelou o menu
 		}
-		dialog_size->SetValue("3");
+		dialog.SetValue("3");
 		showDialog("O valor entrado precisa ser impar", DIALOG_ERROR);
 	}
 	mat_filter_size = static_cast<int>(temp);
@@ -161,20 +160,20 @@ void MainFrame::onLowPass(wxCommandEvent& event) {
 void MainFrame::onHighPass(wxCommandEvent& event) {
 	long temp = 0;
 	int mat_filter_size;
-	auto dialog_size = new wxTextEntryDialog(
+	auto dialog = wxTextEntryDialog(
 		this,
 		wxT("Entre com o tamanho da máscara")
 	);
-	dialog_size->SetTextValidator(wxFILTER_DIGITS);
+	dialog.SetTextValidator(wxFILTER_DIGITS);
 
 	while (1) {
-		if (dialog_size->ShowModal() == wxID_OK) {
-			dialog_size->GetValue().ToLong(&temp);
+		if (dialog.ShowModal() == wxID_OK) {
+			dialog.GetValue().ToLong(&temp);
 			if (temp % 2) break;
 		}else {
 			return; // o usuario cancelou o menu
 		}
-		dialog_size->SetValue("3");
+		dialog.SetValue("3");
 		showDialog("O valor entrado precisa ser impar", DIALOG_ERROR);
 	}
 	mat_filter_size = static_cast<int>(temp);
@@ -186,13 +185,13 @@ void MainFrame::onHighPass(wxCommandEvent& event) {
 	);
 	if (resp) {
 		double reforce;
-		auto dialog_size = new wxTextEntryDialog (
+		auto dialog = wxTextEntryDialog (
 			this,
 			wxT("Entre com o valor do reforço")
 		);
-		dialog_size->SetTextValidator(wxFILTER_NUMERIC);
-		if (dialog_size->ShowModal() == wxID_OK) {
-			dialog_size->GetValue().ToDouble(&reforce);
+		dialog.SetTextValidator(wxFILTER_NUMERIC);
+		if (dialog.ShowModal() == wxID_OK) {
+			dialog.GetValue().ToDouble(&reforce);
 		}else {
 			delete img_temp;
 			return; // o usuario cancelou o menu
@@ -210,19 +209,19 @@ void MainFrame::onHighPass(wxCommandEvent& event) {
 
 void MainFrame::onThreshold(wxCommandEvent& event) {
 	long temp;
-	auto dialog_size = new wxTextEntryDialog(
+	auto dialog = wxTextEntryDialog(
 		this,
 		wxT("Entre com o valor do threshold [0, 255]")
 	);
-	dialog_size->SetTextValidator(wxFILTER_DIGITS);
+	dialog.SetTextValidator(wxFILTER_DIGITS);
 	while (1) {
-		if (dialog_size->ShowModal() == wxID_OK) {
-			dialog_size->GetValue().ToLong(&temp);
+		if (dialog.ShowModal() == wxID_OK) {
+			dialog.GetValue().ToLong(&temp);
 			if (temp <= 255) break;
 		}else {
 			return; // o usuario cancelou o menu
 		}
-		dialog_size->SetValue("127");
+		dialog.SetValue("127");
 		showDialog(
 			"O valor entrado precisa estar dentro da faixa [0, 255]",
 			DIALOG_ERROR
@@ -252,7 +251,28 @@ void MainFrame::onPrewitt(wxCommandEvent& event) {
 }
 
 void MainFrame::onSobel(wxCommandEvent& event) {
-	
+	long temp;
+	auto dialog = wxTextEntryDialog(
+		this,
+		wxT("Entre com o tamanho da matriz")
+	);
+	dialog.SetTextValidator(wxFILTER_DIGITS);
+	if (dialog.ShowModal() == wxID_OK) {
+		dialog.GetValue().ToLong(&temp);
+	}else {
+		return; // o usuario cancelou o menu
+	}
+	const bool use_x = showDialog (
+		wxT("Deseja-se calcular a derivada no eixo X?"),
+		DIALOG_QUESTION
+	);
+	const bool use_y = showDialog (
+		wxT("Deseja-se calcular a derivada no eixo Y?"),
+		DIALOG_QUESTION
+	);
+	img_history.add(img_history.getCurrent()->sobel(use_x, use_y, temp));
+	updateImage();
+	showDialog(wxT("Método de Sobel executado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onLog(wxCommandEvent& event) {
@@ -264,11 +284,53 @@ void MainFrame::onZerocross(wxCommandEvent& event) {
 }
 
 void MainFrame::onCanny(wxCommandEvent& event) {
-	
+	uint8_t t1, t2;
+	long temp;
+	auto dialog1 = wxTextEntryDialog(
+		this,
+		wxT("Entre com o Primeiro valor do threshold [0, 255]")
+	);
+	dialog1.SetTextValidator(wxFILTER_DIGITS);
+	while (1) {
+		if (dialog1.ShowModal() == wxID_OK) {
+			dialog1.GetValue().ToLong(&temp);
+			if (temp <= 255) break;
+		}else {
+			return; // o usuario cancelou o menu
+		}
+		dialog1.SetValue("127");
+		showDialog(
+			"O valor entrado precisa estar dentro da faixa [0, 255]",
+			DIALOG_ERROR
+		);
+	}
+	t1 = static_cast<uint8_t>(temp);
+	auto dialog2 = wxTextEntryDialog(
+		this,
+		wxT("Entre com o Segundo valor do threshold [0, 255]")
+	);
+	dialog2.SetTextValidator(wxFILTER_DIGITS);
+	while (1) {
+		if (dialog2.ShowModal() == wxID_OK) {
+			dialog2.GetValue().ToLong(&temp);
+			if (temp <= 255) break;
+		}else {
+			return; // o usuario cancelou o menu
+		}
+		dialog2.SetValue("127");
+		showDialog(
+			"O valor entrado precisa estar dentro da faixa [0, 255]",
+			DIALOG_ERROR
+		);
+	}
+	t2 = static_cast<uint8_t>(temp);
+	img_history.add(img_history.getCurrent()->canny(t1, t2));
+	updateImage();
+	showDialog(wxT("Método de Canny executado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onNoise(wxCommandEvent& event) {
-	img_history.add(img_history.getCurrent()->noise(5000));
+	img_history.add(img_history.getCurrent()->noise(0.5));
 	updateImage();
 	showDialog(wxT("Ruído salt and peper adicionado com sucesso"), DIALOG_INFO);
 }
@@ -295,7 +357,8 @@ bool MainFrame::openImage() {
 		"Escolha uma imagem jpg para abrir",
 		DEFAULT_IMAGE_FOLDER,
 		wxEmptyString,
-		_T("*.jpg")
+		"Imagens .jpg, .png, .tif |*.jpg;*.tif;*.png",
+		wxFD_OPEN|wxFD_FILE_MUST_EXIST
 	);
 	
 	if (dialog->ShowModal() == wxID_OK) {
