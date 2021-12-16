@@ -21,7 +21,7 @@ MainFrame::MainFrame() :
 	menu_metods->Append(ID_ROBERTS, "&Realizar");
 	menu_metods->Append(ID_PREWITT, "&Realizar");
 	menu_metods->Append(ID_SOBEL, wxT("&Detectar bordas com método de sobel"));
-	menu_metods->Append(ID_LOG, "&Realizar");
+	menu_metods->Append(ID_LOG, "&Realizar Log na imagem");
 	menu_metods->Append(ID_ZEROCROSS, "&Realizar");
 	menu_metods->Append(ID_CANNY, wxT("&Detectar bordas com método de canny"));
 	menu_metods->Append(ID_NOISE, "&Adicionar ruido (Salt and Peper)");
@@ -276,7 +276,9 @@ void MainFrame::onSobel(wxCommandEvent& event) {
 }
 
 void MainFrame::onLog(wxCommandEvent& event) {
-	
+	img_history.add(img_history.getCurrent()->log());
+	updateImage();
+	showDialog(wxT("Método de Log executado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onZerocross(wxCommandEvent& event) {

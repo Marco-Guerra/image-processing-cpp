@@ -65,19 +65,26 @@ Image* Image::sobel(int x, int y, int size) const {
     return dest;
 }
 
-Image* Image::log() const {}
+Image* Image::log() const {
+    auto dest = new Image();
+	mat.convertTo(dest->mat, CV_32FC3);//CV_32F
+	dest->mat = dest->mat + 1;
+	cv::log(mat, dest->mat);
+	cv::convertScaleAbs(dest->mat, dest->mat);
+	cv::normalize(dest->mat, dest->mat, 0, 255, cv::NORM_MINMAX);
+    return dest;
+}
 
 Image* Image::zerocross() const {}
 
 Image* Image::noise(const double noise_probability) const {
     auto dest = new Image();
     int image_channels = mat.channels();
-    uint64_t noisePoints =
-        noise_probability * mat.rows * mat.cols * image_channels;
+    uint64_t noise_points = noise_probability * mat.rows * mat.cols;
 	
 	dest->mat = mat.clone();
 
-    for (long i = 0; i < noisePoints; i++) {
+    for (long i = 0; i < noise_points; i++) {
         int row = rand() % dest->mat.rows;
         int column = rand() % dest->mat.cols;
 
@@ -118,8 +125,11 @@ wxImage Image::toWxImage() const {
     }
 
     size_t img_size = temp_mat.rows * temp_mat.cols * temp_mat.channels();
-    wxImage wx(temp_mat.cols, temp_mat.rows, (unsigned char*)malloc(img_size),
-               false);
+    wxImage wx(
+		temp_mat.cols, temp_mat.rows,
+		(unsigned char*)malloc(img_size),
+        false
+	);
     memcpy(wx.GetData(), temp_mat.data, img_size);
     return wx;
 }
