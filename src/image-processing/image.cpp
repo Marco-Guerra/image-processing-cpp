@@ -80,11 +80,12 @@ Image* Image::noise(const double noise_probability) const {
     for (long i = 0; i < noisePoints; i++) {
         int row = rand() % dest->mat.rows;
         int column = rand() % dest->mat.cols;
-        int channel = rand() % image_channels;
 
-        auto pixel = dest->mat.ptr(row) + (column * image_channels);
-
-        *pixel = (rand() % 2) ? 255 : 0;
+		memset(
+			dest->mat.ptr(row) + (column * image_channels),
+			(rand() % 2) ? 255 : 0,
+			image_channels
+		);
     }
 	return dest;
 }

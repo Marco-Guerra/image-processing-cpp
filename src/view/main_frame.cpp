@@ -330,7 +330,30 @@ void MainFrame::onCanny(wxCommandEvent& event) {
 }
 
 void MainFrame::onNoise(wxCommandEvent& event) {
-	img_history.add(img_history.getCurrent()->noise(0.5));
+	double percentage;
+	auto dialog = wxTextEntryDialog (
+		this,
+		wxT("Entre com a probabilidade de um pixel ser alterado [0, 1]")
+	);
+	dialog.SetTextValidator(wxFILTER_NUMERIC);
+	while (1) {
+		if (dialog.ShowModal() == wxID_OK) {
+			dialog.GetValue().ToDouble(&percentage);
+			if (0.0 <= percentage && percentage <= 1) {
+				break;
+			}
+		}else {
+			return; // o usuario cancelou o menu
+		}
+		dialog.SetValue("0.05");
+		showDialog(
+			"O valor entrado precisa estar dentro da faixa [0, 1]",
+			DIALOG_ERROR
+		);
+	}
+
+
+	img_history.add(img_history.getCurrent()->noise(percentage));
 	updateImage();
 	showDialog(wxT("Ruído salt and peper adicionado com sucesso"), DIALOG_INFO);
 }
