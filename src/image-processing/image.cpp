@@ -1,5 +1,20 @@
 #include "image.hpp"
 
+cv::Mat Image::toGrayMat() const {
+    cv::Mat temp_mat;
+    if (mat.channels() == 3) {
+        debug("Convertendo de BGR para escala de cinsa");
+        cv::cvtColor(mat, temp_mat, cv::COLOR_BGR2GRAY);
+    } else if (mat.channels() == 4) {
+        debug("Convertendo de BGRA para escala de cinsa");
+        cv::cvtColor(mat, temp_mat, cv::COLOR_BGRA2GRAY);
+    }else {
+        debug("A matriz já está em escala de cinsa, copiando");
+        temp_mat = mat.clone();
+    }
+    return temp_mat;
+}
+
 Image::Image() : mat() { debug("Criando a image sem parametros\n"); }
 
 Image::Image(const std::string file_path, int flag) {
@@ -51,11 +66,31 @@ Image* Image::canny(int t1, int t2) const {
 
 Image* Image::toGray() const {
     auto dest = new Image();
-    cv::cvtColor(mat, dest->mat, cv::COLOR_BGR2GRAY);
+    dest->mat = toGrayMat();
+    //cv::cvtColor(mat, dest->mat, cv::COLOR_BGR2GRAY);
     return dest;
 }
 
-Image* Image::roberts() const {}
+Image* Image::roberts() const {
+    auto dest = new Image();
+
+    cv::Mat gray, temp_x, temp_y;
+
+    int8_t x_values[] = {-1, 0, 0, 1};
+    int8_t y_values[] = {0, -1, 1, 0};
+    const cv::Mat kx(cv::Size(2, 2), CV_8S, x_values);
+    const cv::Mat ky(cv::Size(2, 2), CV_8S, y_values);
+
+
+    gray = toGrayMat();
+    cv::filter2D(gray, temp_x, -1, kx);
+    cv::filter2D(gray, temp_y, -1, ky);
+
+    //dest->mat = (temp_x / 2) + (temp_y / 2);
+    dest->mat = temp_x + temp_y;
+
+    return dest;
+}
 
 Image* Image::prewitt() const {}
 
@@ -67,11 +102,13 @@ Image* Image::sobel(int x, int y, int size) const {
 
 Image* Image::log() const {
     auto dest = new Image();
-	mat.convertTo(dest->mat, CV_32FC3);//CV_32F
+
+	mat.convertTo(dest->mat, CV_32F);
 	dest->mat = dest->mat + 1;
-	cv::log(mat, dest->mat);
-	cv::convertScaleAbs(dest->mat, dest->mat);
+	cv::log(dest->mat, dest->mat);
 	cv::normalize(dest->mat, dest->mat, 0, 255, cv::NORM_MINMAX);
+	cv::convertScaleAbs(dest->mat, dest->mat);
+    
     return dest;
 }
 
@@ -101,7 +138,16 @@ Image* Image::watershed() const {}
 
 Image* Image::histogram() const {}
 
-Image* Image::histogramAjus() const {}
+Image* Image::histogramAjust() const {
+    auto dest = new Image();
+    if (mat.channels() == 1) {
+        dest->mat = mat.clone();
+    }else {
+        cv::cvtColor(mat, dest->mat, cv::COLOR_BGR2GRAY);
+    }
+    cv::equalizeHist(dest->mat, dest->mat);
+    return dest;
+}
 
 Image* Image::count() const {}
 
@@ -117,13 +163,8 @@ wxImage Image::toWxImage() const {
         cv::cvtColor(mat, temp_mat, cv::COLOR_BGRA2RGB);
     } else {  // 3 canais = BGR no opencv
         debug("Convertendo para imagem com " << mat.channels() << " canais\n");
-        // eu precisava copiar os dados sem fazer mudanca de cor,
-        // mas tava dando seg foult
         cv::cvtColor(mat, temp_mat, cv::COLOR_BGR2RGB);
-        // cv::cvtColor(temp_mat, temp_mat, cv::COLOR_RGB2BGR);
-        // temp_mat = cv::Mat(mat, true);
     }
-
     size_t img_size = temp_mat.rows * temp_mat.cols * temp_mat.channels();
     wxImage wx(
 		temp_mat.cols, temp_mat.rows,

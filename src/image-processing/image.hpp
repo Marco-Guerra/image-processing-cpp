@@ -10,6 +10,10 @@ class Image {
 private:
 	cv::Mat mat;
 
+	// Gera uma nova matriz na escala de cinsa
+	// a partir da matriz dentro da classe
+	cv::Mat toGrayMat() const;
+
 public:
 	Image();
 	Image(const std::string file_path, int flag = 1);
@@ -35,7 +39,7 @@ public:
     Image* noise(const double noise_probability) const;
     Image* watershed() const;
     Image* histogram() const;
-    Image* histogramAjus() const;
+    Image* histogramAjust() const;
     Image* count() const;
 
 	const cv::Mat &getMat() const;

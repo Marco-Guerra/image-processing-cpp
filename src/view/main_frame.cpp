@@ -18,7 +18,7 @@ MainFrame::MainFrame() :
 	menu_metods->Append(ID_HIGH_PASS, "&Realizar passa alta...\tCtrl-H");
 	menu_metods->Append(ID_THRESHOLD, "&Realizar threshold");
 	menu_metods->Append(ID_GRAY, wxT("&Realizar transformação escala de cinsa"));
-	menu_metods->Append(ID_ROBERTS, "&Realizar");
+	menu_metods->Append(ID_ROBERTS, wxT("&Detectar bordas com método de Roberts"));
 	menu_metods->Append(ID_PREWITT, "&Realizar");
 	menu_metods->Append(ID_SOBEL, wxT("&Detectar bordas com método de sobel"));
 	menu_metods->Append(ID_LOG, "&Realizar Log na imagem");
@@ -27,7 +27,7 @@ MainFrame::MainFrame() :
 	menu_metods->Append(ID_NOISE, "&Adicionar ruido (Salt and Peper)");
 	menu_metods->Append(ID_WATERSHED, "&Realizar");
 	menu_metods->Append(ID_HISTOGRAM, "&Realizar");
-	menu_metods->Append(ID_HISTOGRAM_AJUST, "&Realizar");
+	menu_metods->Append(ID_HISTOGRAM_AJUST, "&Realizar ajuste da escala de cinsa usando histograma");
 	menu_metods->Append(ID_COUNT, "&Realizar");
 
 	menu_file->Append(ID_OPEN, "Abrir uma imagem\tCtrl-O",
@@ -82,7 +82,7 @@ void MainFrame::onSave(wxCommandEvent& event) {
 		"Escolha o nome da imagem para salvar",
 		DEFAULT_IMAGE_FOLDER,
 		wxEmptyString,
-		_T("*.jpg"),
+		"Imagens .jpg, .png, .tif |*.jpg;*.tif;*.png",
 		wxFD_SAVE
 	);
 	
@@ -243,7 +243,9 @@ void MainFrame::onGray(wxCommandEvent& event) {
 }
 
 void MainFrame::onRoberts(wxCommandEvent& event) {
-	
+	img_history.add(img_history.getCurrent()->roberts());
+	updateImage();
+	showDialog(wxT("Método de Roberts executado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onPrewitt(wxCommandEvent& event) {
@@ -369,7 +371,9 @@ void MainFrame::onHistogram(wxCommandEvent& event) {
 }
 
 void MainFrame::onHistogramAjust(wxCommandEvent& event) {
-	
+	img_history.add(img_history.getCurrent()->histogramAjust());
+	updateImage();
+	showDialog(wxT("ajuste da escala de cinsa usando histograma realizado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onCount(wxCommandEvent& event) {
