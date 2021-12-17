@@ -8,6 +8,8 @@ END_EVENT_TABLE()
 ImagePanel::ImagePanel(wxFrame* parent) : wxPanel(parent),
                     image_changed(false), image(), resized() {
     debug ("Construindo o ImagePanel\n");
+	//wxPanel::SetBackground();
+	//wxPanel::Create();
 }
 
 ImagePanel::ImagePanel(wxFrame* parent, const wxString &file_name, wxBitmapType format) :
