@@ -26,7 +26,7 @@ MainFrame::MainFrame() :
 	menu_metods->Append(ID_CANNY, wxT("&Detectar bordas com método de canny"));
 	menu_metods->Append(ID_NOISE, "&Adicionar ruido (Salt and Peper)");
 	menu_metods->Append(ID_WATERSHED, "&Realizar");
-	menu_metods->Append(ID_HISTOGRAM, "&Realizar");
+	menu_metods->Append(ID_HISTOGRAM, "&Mostrar o histograma da imagem");
 	menu_metods->Append(ID_HISTOGRAM_AJUST, "&Realizar ajuste da escala de cinsa usando histograma");
 	menu_metods->Append(ID_COUNT, "&Realizar");
 
@@ -375,7 +375,9 @@ void MainFrame::onWatershed(wxCommandEvent& event) {
 }
 
 void MainFrame::onHistogram(wxCommandEvent& event) {
-	
+	img_history.add(img_history.getCurrent()->histogram());
+	updateImage();
+	showDialog(wxT("Histograma gerado"), DIALOG_INFO);
 }
 
 void MainFrame::onHistogramAjust(wxCommandEvent& event) {

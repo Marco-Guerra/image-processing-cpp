@@ -169,7 +169,24 @@ Image* Image::noise(const double noise_probability) const {
 
 Image* Image::watershed() const {}
 
-Image* Image::histogram() const {}
+Image* Image::histogram() const {
+    auto dest = new Image();
+    /*
+    if (mat.channels() != 1) {
+        std::cerr << "Para ficar mais facil so aceito imagens de 1 canal\n";
+        return nullptr;
+    }
+    */
+    const auto gray = toGrayMat();
+
+    int size = 256;
+    float range[2] = {0, 256};
+    const float *const_acess = range;
+
+    //cv::calcHist(mat, 1, 0, dest->mat, UINT8_MAX, range);
+    cv::calcHist(&gray, 1, 0, cv::Mat(), dest->mat, 1, &size, &const_acess);
+	return dest;
+}
 
 Image* Image::histogramAjust() const {
     auto dest = new Image();

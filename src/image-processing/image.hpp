@@ -6,9 +6,16 @@
 
 #include "../utils/debug.hpp"
 
+/**
+ * @brief Classe que representa uma imagem,
+ * 
+ * um wrapper envolta da cv::Mat para gerar novas imagens
+ * a partir dos dados contidos na mesma, facilitando a integração
+ * com o framework wxWidgets e simplificando mostrar a imagem para o usuário
+ */
 class Image {
 private:
-	cv::Mat mat;
+	cv::Mat mat; /// matriz contendo cada pixel da imagem
 
 	// Gera uma nova matriz na escala de cinsa
 	// a partir da matriz dentro da classe
