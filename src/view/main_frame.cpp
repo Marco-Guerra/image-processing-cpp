@@ -19,7 +19,7 @@ MainFrame::MainFrame() :
 	menu_metods->Append(ID_THRESHOLD, "&Realizar threshold");
 	menu_metods->Append(ID_GRAY, wxT("&Realizar transformação escala de cinsa"));
 	menu_metods->Append(ID_ROBERTS, wxT("&Detectar bordas com método de Roberts"));
-	menu_metods->Append(ID_PREWITT, "&Realizar");
+	menu_metods->Append(ID_PREWITT, wxT("&Detectar bordas com método de Prewitt"));
 	menu_metods->Append(ID_SOBEL, wxT("&Detectar bordas com método de sobel"));
 	menu_metods->Append(ID_LOG, "&Realizar Log na imagem");
 	menu_metods->Append(ID_ZEROCROSS, "&Realizar");
@@ -245,11 +245,19 @@ void MainFrame::onGray(wxCommandEvent& event) {
 void MainFrame::onRoberts(wxCommandEvent& event) {
 	img_history.add(img_history.getCurrent()->roberts());
 	updateImage();
-	showDialog(wxT("Método de Roberts executado com sucesso"), DIALOG_INFO);
+	showDialog(
+		wxT("Detecção de bordas com método de Roberts executado com sucesso"),
+		DIALOG_INFO
+	);
 }
 
 void MainFrame::onPrewitt(wxCommandEvent& event) {
-	
+	img_history.add(img_history.getCurrent()->prewitt());
+	updateImage();
+	showDialog(
+		wxT("Detecção de bordas com método de Prewitt executado com sucesso"),
+		DIALOG_INFO
+	);
 }
 
 void MainFrame::onSobel(wxCommandEvent& event) {

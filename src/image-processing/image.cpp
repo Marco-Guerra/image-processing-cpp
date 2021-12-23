@@ -67,32 +67,64 @@ Image* Image::canny(int t1, int t2) const {
 Image* Image::toGray() const {
     auto dest = new Image();
     dest->mat = toGrayMat();
-    //cv::cvtColor(mat, dest->mat, cv::COLOR_BGR2GRAY);
     return dest;
 }
 
 Image* Image::roberts() const {
     auto dest = new Image();
 
-    cv::Mat gray, temp_x, temp_y;
+    cv::Mat temp_x, temp_y;
+    const auto gray = toGrayMat();
 
-    int8_t x_values[] = {-1, 0, 0, 1};
-    int8_t y_values[] = {0, -1, 1, 0};
+    int8_t x_values[] = {
+        -1, 0,
+        0, 1
+    };
+    int8_t y_values[] = {
+        0, -1,
+        1, 0
+    };
     const cv::Mat kx(cv::Size(2, 2), CV_8S, x_values);
     const cv::Mat ky(cv::Size(2, 2), CV_8S, y_values);
 
 
-    gray = toGrayMat();
     cv::filter2D(gray, temp_x, -1, kx);
     cv::filter2D(gray, temp_y, -1, ky);
 
-    //dest->mat = (temp_x / 2) + (temp_y / 2);
     dest->mat = temp_x + temp_y;
+    cv::convertScaleAbs(dest->mat, dest->mat);
 
     return dest;
 }
 
-Image* Image::prewitt() const {}
+Image* Image::prewitt() const {
+    auto dest = new Image();
+
+    cv::Mat temp_x, temp_y;
+    const auto gray = toGrayMat();
+
+    int8_t x_values[] = {
+        1, 1, 1,
+        0, 0, 0,
+        -1, -1, -1
+    };
+    int8_t y_values[] = {
+        -1, 0, 1,
+        -1, 0, 1,
+        -1, 0, 1
+    };
+
+    const cv::Mat kx(cv::Size(3, 3), CV_8S, x_values);
+    const cv::Mat ky(cv::Size(3, 3), CV_8S, y_values);
+
+    cv::filter2D(gray, temp_x, -1, kx);
+    cv::filter2D(gray, temp_y, -1, ky);
+
+    dest->mat = temp_x + temp_y;
+    cv::convertScaleAbs(dest->mat, dest->mat);
+
+    return dest;
+}
 
 Image* Image::sobel(int x, int y, int size) const {
     auto dest = new Image();
@@ -102,8 +134,9 @@ Image* Image::sobel(int x, int y, int size) const {
 
 Image* Image::log() const {
     auto dest = new Image();
+    const auto gray = toGrayMat();
 
-	mat.convertTo(dest->mat, CV_32F);
+	gray.convertTo(dest->mat, CV_32F);
 	dest->mat = dest->mat + 1;
 	cv::log(dest->mat, dest->mat);
 	cv::normalize(dest->mat, dest->mat, 0, 255, cv::NORM_MINMAX);

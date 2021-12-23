@@ -5,7 +5,7 @@
 - [X] Passa-Alta
 - [X] Passa-Baixa
 - [X] Roberts
-- [ ] Prewitt
+- [X] Prewitt
 - [X] Sobel
 - [X] Log
 - [ ] Zerocross
