@@ -170,21 +170,69 @@ Image* Image::noise(const double noise_probability) const {
 Image* Image::watershed() const {}
 
 Image* Image::histogram() const {
-    auto dest = new Image();
-    /*
-    if (mat.channels() != 1) {
-        std::cerr << "Para ficar mais facil so aceito imagens de 1 canal\n";
-        return nullptr;
-    }
-    */
-    const auto gray = toGrayMat();
-
+    // definições para gerar o histograma
     int size = 256;
+    int hist_w = 512;
+    int hist_h = 400;
+    int bin_w = cvRound((double)hist_w / size);
     float range[2] = {0, 256};
     const float *const_acess = range;
+    cv::Mat hist_image(hist_h, hist_w, CV_8UC3, cv::Scalar(0, 0, 0));
 
-    //cv::calcHist(mat, 1, 0, dest->mat, UINT8_MAX, range);
-    cv::calcHist(&gray, 1, 0, cv::Mat(), dest->mat, 1, &size, &const_acess);
+    auto dest = new Image();
+    if (mat.channels() == 3) { // eh uma imagem bgr
+        cv::Mat red_hist, green_hist, blue_hist;
+        std::vector<cv::Mat> bgr_mat_vet;
+
+        bgr_mat_vet.reserve(3);
+        cv::split(mat, bgr_mat_vet);
+        cv::calcHist(&bgr_mat_vet.at(0), 1, 0, cv::Mat(), blue_hist, 1, &size, &const_acess);
+        cv::calcHist(&bgr_mat_vet.at(1), 1, 0, cv::Mat(), green_hist, 1, &size, &const_acess);
+        cv::calcHist(&bgr_mat_vet.at(2), 1, 0, cv::Mat(), red_hist, 1, &size, &const_acess);
+
+        cv::normalize(blue_hist, blue_hist, 0, hist_image.rows, cv::NORM_MINMAX, -1, cv::Mat());
+        cv::normalize(green_hist, green_hist, 0, hist_image.rows, cv::NORM_MINMAX, -1, cv::Mat());
+        cv::normalize(red_hist, red_hist, 0, hist_image.rows, cv::NORM_MINMAX, -1, cv::Mat());
+
+        for (int i = 1; i < size; i++) {
+            cv::line (
+                hist_image,
+                cv::Point(bin_w * (i - 1), hist_h - cvRound(blue_hist.at<float>(i - 1))),
+                cv::Point(bin_w * (i), hist_h - cvRound(blue_hist.at<float>(i))),
+                cv::Scalar(255, 0, 0),
+                2
+            );
+            cv::line (
+                hist_image,
+                cv::Point(bin_w * (i - 1), hist_h - cvRound(green_hist.at<float>(i - 1))),
+                cv::Point(bin_w * (i), hist_h - cvRound(green_hist.at<float>(i))),
+                cv::Scalar(0, 255, 0),
+                2
+            );
+            cv::line (
+                hist_image,
+                cv::Point(bin_w * (i - 1), hist_h - cvRound(red_hist.at<float>(i - 1))),
+                cv::Point(bin_w * (i), hist_h - cvRound(red_hist.at<float>(i))),
+                cv::Scalar(0, 0, 255),
+                2
+            );
+        }
+    }else {
+        cv::Mat gray_hist;
+        cv::calcHist(&mat, 1, 0, cv::Mat(), gray_hist, 1, &size, &const_acess);
+        cv::normalize(gray_hist, gray_hist, 0, hist_image.rows, cv::NORM_MINMAX, -1, cv::Mat());
+        for (int i = 1; i < size; i++) {
+            cv::line (
+                hist_image,
+                cv::Point(bin_w * (i - 1), hist_h - cvRound(gray_hist.at<float>(i - 1))),
+                cv::Point(bin_w * (i), hist_h - cvRound(gray_hist.at<float>(i))),
+                cv::Scalar(128, 128, 128),
+                2
+            );
+        }
+    }
+
+    dest->mat = hist_image;
 	return dest;
 }
 
