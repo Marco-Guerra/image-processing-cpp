@@ -12,6 +12,6 @@
 - [X] Canny
 - [X] Ruídos(salt & pepper, etc)
 - [ ] Watershed
-- [ ] Histograma (Escala de cinza)
+- [X] Histograma (Escala de cinza)
 - [X] Ajuste adaptativo de histograma
 - [ ] Contagem simples de objetos limiarizados com marcação na imagem

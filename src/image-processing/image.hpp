@@ -6,6 +6,11 @@
 
 #include "../utils/debug.hpp"
 
+#define COLOR_BLUE_SCALAR cv::Scalar(255, 0, 0)
+#define COLOR_GREEN_SCALAR cv::Scalar(0, 255, 0)
+#define COLOR_RED_SCALAR cv::Scalar(0, 0, 255)
+#define COLOR_GRAY_SCALAR cv::Scalar(128, 128, 128)
+
 /**
  * @brief Classe que representa uma imagem,
  * 

@@ -172,8 +172,8 @@ Image* Image::watershed() const {}
 Image* Image::histogram() const {
     // definições para gerar o histograma
     int size = 256;
-    int hist_w = 512;
-    int hist_h = 400;
+    int hist_w = 800;
+    int hist_h = 600;
     int bin_w = cvRound((double)hist_w / size);
     float range[2] = {0, 256};
     const float *const_acess = range;
@@ -199,21 +199,21 @@ Image* Image::histogram() const {
                 hist_image,
                 cv::Point(bin_w * (i - 1), hist_h - cvRound(blue_hist.at<float>(i - 1))),
                 cv::Point(bin_w * (i), hist_h - cvRound(blue_hist.at<float>(i))),
-                cv::Scalar(255, 0, 0),
+                COLOR_BLUE_SCALAR,
                 2
             );
             cv::line (
                 hist_image,
                 cv::Point(bin_w * (i - 1), hist_h - cvRound(green_hist.at<float>(i - 1))),
                 cv::Point(bin_w * (i), hist_h - cvRound(green_hist.at<float>(i))),
-                cv::Scalar(0, 255, 0),
+                COLOR_GREEN_SCALAR,
                 2
             );
             cv::line (
                 hist_image,
                 cv::Point(bin_w * (i - 1), hist_h - cvRound(red_hist.at<float>(i - 1))),
                 cv::Point(bin_w * (i), hist_h - cvRound(red_hist.at<float>(i))),
-                cv::Scalar(0, 0, 255),
+                COLOR_RED_SCALAR,
                 2
             );
         }
@@ -226,7 +226,7 @@ Image* Image::histogram() const {
                 hist_image,
                 cv::Point(bin_w * (i - 1), hist_h - cvRound(gray_hist.at<float>(i - 1))),
                 cv::Point(bin_w * (i), hist_h - cvRound(gray_hist.at<float>(i))),
-                cv::Scalar(128, 128, 128),
+                COLOR_GRAY_SCALAR,
                 2
             );
         }

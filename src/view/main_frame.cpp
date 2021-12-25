@@ -375,6 +375,14 @@ void MainFrame::onWatershed(wxCommandEvent& event) {
 }
 
 void MainFrame::onHistogram(wxCommandEvent& event) {
+	if (img_history.getCurrent()->getMat().channels() != 1) {
+		if (showDialog (
+			wxT("A imagem não está na escala de cinsa. Deseja transformá-la?"),
+			DIALOG_QUESTION
+		)) {
+			img_history.add(img_history.getCurrent()->toGray());
+		}
+	}
 	img_history.add(img_history.getCurrent()->histogram());
 	updateImage();
 	showDialog(wxT("Histograma gerado"), DIALOG_INFO);
