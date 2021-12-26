@@ -8,11 +8,7 @@
 #include "image_panel.hpp"
 #include "../image-processing/image_history.hpp"
 
-enum DialogType {
-	DIALOG_ERROR,
-	DIALOG_INFO,
-	DIALOG_QUESTION,
-};
+#include "dialog.hpp"
 
 #define DEFAULT_IMAGE_FOLDER "../images"
 #define INITIAL_IMAGE (const char  *)(DEFAULT_IMAGE_FOLDER "/full_hd.jpg")
@@ -25,8 +21,13 @@ private:
     ImagePanel *drawPane;
 
 	wxBoxSizer *sizer;
-	wxMenu *menu_metods;
 	wxMenu *menu_file;
+	wxMenu *menu_metods;
+	wxMenu *menu_filter;
+	wxMenu *menu_borders;
+	wxMenu *menu_histogram;
+	wxMenu *menu_transformation;
+	wxMenu *menu_noise;
 	wxMenuBar *menu_bar;
 
 

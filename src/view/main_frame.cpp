@@ -5,8 +5,13 @@ MainFrame::MainFrame() :
 	img_history(new Image(INITIAL_IMAGE)),
 	drawPane(new ImagePanel(this, INITIAL_IMAGE, wxBITMAP_TYPE_JPEG)),
 	sizer(new wxBoxSizer(wxHORIZONTAL)),
-	menu_metods(new wxMenu()),
 	menu_file(new wxMenu()),
+	menu_metods(new wxMenu()),
+	menu_filter(new wxMenu()),
+	menu_borders(new wxMenu()),
+	menu_histogram(new wxMenu()),
+	menu_transformation(new wxMenu()),
+	menu_noise(new wxMenu()),
 	menu_bar(new wxMenuBar()) {
 
 	debug("Construindo MainFrame\n");
@@ -14,32 +19,42 @@ MainFrame::MainFrame() :
 	SetSizer(sizer);
 	sizer->Add(drawPane, 1, wxEXPAND);
 
-	menu_metods->Append(ID_LOW_PASS, "&Realizar passa baixa...\tCtrl-L");
-	menu_metods->Append(ID_HIGH_PASS, "&Realizar passa alta...\tCtrl-H");
-	menu_metods->Append(ID_THRESHOLD, "&Realizar threshold");
-	menu_metods->Append(ID_GRAY, wxT("&Realizar transformação escala de cinsa"));
-	menu_metods->Append(ID_ROBERTS, wxT("&Detectar bordas com método de Roberts"));
-	menu_metods->Append(ID_PREWITT, wxT("&Detectar bordas com método de Prewitt"));
-	menu_metods->Append(ID_SOBEL, wxT("&Detectar bordas com método de sobel"));
-	menu_metods->Append(ID_LOG, "&Realizar Log na imagem");
-	menu_metods->Append(ID_ZEROCROSS, "&Realizar");
-	menu_metods->Append(ID_CANNY, wxT("&Detectar bordas com método de canny"));
-	menu_metods->Append(ID_NOISE, "&Adicionar ruido (Salt and Peper)");
-	menu_metods->Append(ID_WATERSHED, "&Realizar");
-	menu_metods->Append(ID_HISTOGRAM, "&Mostrar o histograma da imagem");
-	menu_metods->Append(ID_HISTOGRAM_AJUST, "&Realizar ajuste da escala de cinsa usando histograma");
-	menu_metods->Append(ID_COUNT, "&Realizar");
-
 	menu_file->Append(ID_OPEN, "Abrir uma imagem\tCtrl-O",
 		wxT("Selecionando essa opção será levado ao gerenciador de arquivos do sistema"));
 	menu_file->Append(ID_SAVE_FILE, "&Salvando a imagem atual...\tCtrl-S",
 		"Abre um menu para selecionar onde salvar a imagem");
 	menu_file->AppendSeparator();
-	menu_file->Append(ID_UNDO, wxT("&Desfazer ação...\tCtrl-Z"));
-	menu_file->Append(ID_REDO, wxT("&Refazer ação...\tCtrl-Y"));
+	menu_file->Append(ID_UNDO, wxT("&Desfazer ação...\tCtrl-Z"), "Desfazer");
+	menu_file->Append(ID_REDO, wxT("&Refazer ação...\tCtrl-Y"), "Refazer");
+
+	menu_metods->Append(ID_ZEROCROSS, "&Realizar");
+	menu_metods->Append(ID_WATERSHED, "&Realizar");
+	menu_metods->Append(ID_COUNT, "&Realizar");
+
+	menu_filter->Append(ID_LOW_PASS,  "&Passa baixa");
+	menu_filter->Append(ID_HIGH_PASS, "&Passa alta");
+	menu_filter->Append(ID_THRESHOLD, "&Threshold");
+
+	menu_borders->Append(ID_ROBERTS, wxT("&Método de Roberts"));
+	menu_borders->Append(ID_PREWITT, wxT("&Método de Prewitt"));
+	menu_borders->Append(ID_SOBEL,   wxT("&Método de Sobel"));
+	menu_borders->Append(ID_CANNY,   wxT("&Método de canny"));
+
+	menu_histogram->Append(ID_HISTOGRAM, "&Obter o histograma da imagem");
+	menu_histogram->Append(ID_HISTOGRAM_AJUST, "&Ajustar a escala de cinsa");
+
+	menu_transformation->Append(ID_GRAY, wxT("&Transformar para escala de cinsa"));
+	menu_transformation->Append(ID_LOG,  wxT("&Transformação Logarítmica"));
+
+	menu_noise->Append(ID_NOISE, "&Adicionar ruido Salt and Peper");
 
     menu_bar->Append(menu_file, "Imagem");
     menu_bar->Append(menu_metods, wxT("Métodos"));
+    menu_bar->Append(menu_filter, "Filtros");
+    menu_bar->Append(menu_borders, "Detectando bordas");
+    menu_bar->Append(menu_histogram, "Histograma");
+    menu_bar->Append(menu_transformation, wxT("Transformações"));
+    menu_bar->Append(menu_noise, wxT("Ruídos"));
 
 	SetMenuBar(menu_bar);
 	CreateStatusBar();
@@ -72,7 +87,7 @@ void MainFrame::onOpen(wxCommandEvent& event) {
 	if (openImage()) {
 		updateImage();
 	}else {
-		showDialog(wxT("Erro ao carregar a imagem"), DIALOG_ERROR);
+		Dialog dialog(this, wxT("Erro ao carregar a imagem"), DIALOG_ERROR);
 	}
 }
 
@@ -88,19 +103,20 @@ void MainFrame::onSave(wxCommandEvent& event) {
 	
 	if (dialog->ShowModal() == wxID_OK) {
 		if (drawPane->saveFile(dialog->GetPath())) {
-			showDialog("Imagem salva com sucesso", DIALOG_INFO);
+			Dialog dialog_sucess(this, "Imagem salva com sucesso", DIALOG_INFO);
 			return;
 		}
 	}
-	showDialog("Falha ao salvar Imagem", DIALOG_ERROR);
+	Dialog dialog_fail(this, "Falha ao salvar Imagem", DIALOG_ERROR);
 }
 
 void MainFrame::onUndo(wxCommandEvent& event) {
 	if (img_history.previus()) {
 		updateImage();
-		showDialog("Desfazer executado com sucesso", DIALOG_INFO);
+		Dialog dialog(this, "Desfazer executado com sucesso", DIALOG_INFO);
 	}else {
-		showDialog(
+		Dialog dialog (
+			this, 
 			wxT("Falha ao executar o desfazer, você já está no último elemento"),
 			DIALOG_ERROR
 		);
@@ -110,9 +126,14 @@ void MainFrame::onUndo(wxCommandEvent& event) {
 void MainFrame::onRedo(wxCommandEvent& event) {
 	if (img_history.next()) {
 		updateImage();
-		showDialog("Refazer executado com sucesso", DIALOG_INFO);
+		Dialog dialog (
+			this,
+			"Refazer executado com sucesso",
+			DIALOG_INFO
+		);
 	}else {
-		showDialog(
+		Dialog dialog (
+			this,
 			wxT("Falha ao executar o refazer, você já está no topo da pilha"),
 			DIALOG_ERROR
 		);
@@ -236,7 +257,8 @@ void MainFrame::onThreshold(wxCommandEvent& event) {
 void MainFrame::onGray(wxCommandEvent& event) {
 	img_history.add(img_history.getCurrent()->toGray());
 	updateImage();
-	showDialog(
+	Dialog dialog (
+		this,
 		wxT("Transformação para escala de cinsa executado com sucesso"),
 		DIALOG_INFO
 	);
@@ -245,7 +267,8 @@ void MainFrame::onGray(wxCommandEvent& event) {
 void MainFrame::onRoberts(wxCommandEvent& event) {
 	img_history.add(img_history.getCurrent()->roberts());
 	updateImage();
-	showDialog(
+	Dialog dialog (
+		this,
 		wxT("Detecção de bordas com método de Roberts executado com sucesso"),
 		DIALOG_INFO
 	);
@@ -254,7 +277,8 @@ void MainFrame::onRoberts(wxCommandEvent& event) {
 void MainFrame::onPrewitt(wxCommandEvent& event) {
 	img_history.add(img_history.getCurrent()->prewitt());
 	updateImage();
-	showDialog(
+	Dialog dialog (
+		this,
 		wxT("Detecção de bordas com método de Prewitt executado com sucesso"),
 		DIALOG_INFO
 	);
@@ -267,10 +291,15 @@ void MainFrame::onSobel(wxCommandEvent& event) {
 		wxT("Entre com o tamanho da matriz")
 	);
 	dialog.SetTextValidator(wxFILTER_DIGITS);
-	if (dialog.ShowModal() == wxID_OK) {
-		dialog.GetValue().ToLong(&temp);
-	}else {
-		return; // o usuario cancelou o menu
+	while (1) {
+		if (dialog.ShowModal() == wxID_OK) {
+			dialog.GetValue().ToLong(&temp);
+			if (temp % 2) break;
+		}else {
+			return; // o usuario cancelou o menu
+		}
+		dialog.SetValue("3");
+		showDialog("O valor entrado precisa ser impar", DIALOG_ERROR);
 	}
 	const bool use_x = showDialog (
 		wxT("Deseja-se calcular a derivada no eixo X?"),
@@ -288,7 +317,11 @@ void MainFrame::onSobel(wxCommandEvent& event) {
 void MainFrame::onLog(wxCommandEvent& event) {
 	img_history.add(img_history.getCurrent()->log());
 	updateImage();
-	showDialog(wxT("Método de Log executado com sucesso"), DIALOG_INFO);
+	Dialog dialog (
+		this,
+		wxT("Método de Log executado com sucesso"),
+		DIALOG_INFO
+	);
 }
 
 void MainFrame::onZerocross(wxCommandEvent& event) {
@@ -376,22 +409,32 @@ void MainFrame::onWatershed(wxCommandEvent& event) {
 
 void MainFrame::onHistogram(wxCommandEvent& event) {
 	if (img_history.getCurrent()->getMat().channels() != 1) {
-		if (showDialog (
+		Dialog dialog (
+			this,
 			wxT("A imagem não está na escala de cinsa. Deseja transformá-la?"),
 			DIALOG_QUESTION
-		)) {
+		);
+		if (dialog.getUserInput()) {
 			img_history.add(img_history.getCurrent()->toGray());
 		}
 	}
 	img_history.add(img_history.getCurrent()->histogram());
 	updateImage();
-	showDialog(wxT("Histograma gerado"), DIALOG_INFO);
+	Dialog dialog (
+		this,
+		wxT("Histograma gerado"),
+		DIALOG_INFO
+	);
 }
 
 void MainFrame::onHistogramAjust(wxCommandEvent& event) {
 	img_history.add(img_history.getCurrent()->histogramAjust());
 	updateImage();
-	showDialog(wxT("ajuste da escala de cinsa usando histograma realizado com sucesso"), DIALOG_INFO);
+	Dialog dialog (
+		this,
+		wxT("ajuste da escala de cinsa usando histograma realizado com sucesso"),
+		DIALOG_INFO
+	);
 }
 
 void MainFrame::onCount(wxCommandEvent& event) {
@@ -410,13 +453,14 @@ bool MainFrame::openImage() {
 	
 	if (dialog->ShowModal() == wxID_OK) {
 		auto path = dialog->GetPath().ToStdString();
-		const bool resp = showDialog(
+		Dialog dialog(
+			this,
 			"Deseja abrir a imagem " +
 			path +
 			wxT("? Todos os métodos executados na imagem anterior serão perdidos."),
 			DIALOG_QUESTION
 		);
-		if (resp) {
+		if (dialog.getUserInput()) {
 			img_history.clean();
 			img_history.add(new Image(path));
 			return true;
@@ -439,10 +483,10 @@ bool MainFrame::showDialog(const wxString &message, DialogType type) {
 		caption = wxT("Confirmação");
 		style = wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION;
 	}
-	auto dial = new wxMessageDialog (
+	wxMessageDialog dial (
 		this, message, caption, style
 	);
-	const auto ret = dial->ShowModal();
+	const auto ret = dial.ShowModal();
 	if (type == DIALOG_QUESTION) {
 		return ret == wxID_YES;
 	}

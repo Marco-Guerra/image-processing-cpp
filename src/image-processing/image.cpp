@@ -127,8 +127,9 @@ Image* Image::prewitt() const {
 }
 
 Image* Image::sobel(int x, int y, int size) const {
-    auto dest = new Image();
-    cv::Sobel(mat, dest->mat, CV_8U, x, y, size);
+    auto dest = toGray();
+    cv::Sobel(mat, dest->mat, CV_16U, x, y, size);
+    cv::convertScaleAbs(dest->mat, dest->mat);
     return dest;
 }
 
