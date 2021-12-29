@@ -131,6 +131,7 @@ void MainFrame::onRedo(wxCommandEvent& event) {
 			"Refazer executado com sucesso",
 			DIALOG_INFO
 		);
+
 	}else {
 		Dialog dialog (
 			this,

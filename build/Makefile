@@ -24,6 +24,8 @@ SRC_DIR=../src
 
 SRC := $(wildcard $(SRC_DIR)/*/*.cpp)
 OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
+PCH := $(wildcard $(SRC_DIR)/include/*.hpp)
+PCH_OUT := $(patsubst $(SRC_DIR)/include/*.hpp, $(OBJ_DIR)/%.gch, $(PCH))
 
 EXEC=main.out
 
@@ -38,6 +40,12 @@ $(OBJ): $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 clean:
 	rm $(OBJ) $(EXEC)
+
+generate_pch: $(PCH_OUT)
+
+$(PCH_OUT): $(PCH)
+	echo $@
+#$(CXX) $(CXXFLAGS) $@ -o $<
 
 run: all
 	./$(EXEC)

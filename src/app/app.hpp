@@ -1,10 +1,7 @@
 #ifndef APP
 #define APP
 
-#include <wx/wx.h>
-#include <wx/sizer.h>
-#include <opencv2/opencv.hpp>
-
+#include "../include/my_includes.hpp"
 #include "../view/main_frame.hpp"
 
 class App : public wxApp {

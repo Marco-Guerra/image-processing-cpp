@@ -2,16 +2,14 @@
 #define MAIN_FRAME
 
 #include <functional>
-#include <wx/wxprec.h>
-#include <wx/wx.h>
 
-#include "image_panel.hpp"
+#include "../include/wx.hpp"
+#include "../include/debug.hpp"
+#include "../include/config.hpp"
+
 #include "../image-processing/image_history.hpp"
-
+#include "image_panel.hpp"
 #include "dialog.hpp"
-
-#define DEFAULT_IMAGE_FOLDER "../images"
-#define INITIAL_IMAGE (const char  *)(DEFAULT_IMAGE_FOLDER "/full_hd.jpg")
 
 class MainFrame : public wxFrame {
 friend class MainFrameController;

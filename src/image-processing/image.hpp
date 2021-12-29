@@ -1,10 +1,7 @@
 #ifndef IMAGE
 #define IMAGE
 
-#include <opencv2/opencv.hpp>
-#include <wx/wx.h>
-
-#include "../utils/debug.hpp"
+#include "../include/my_includes.hpp"
 
 #define COLOR_BLUE_SCALAR cv::Scalar(255, 0, 0)
 #define COLOR_GREEN_SCALAR cv::Scalar(0, 255, 0)

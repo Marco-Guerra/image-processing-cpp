@@ -1,8 +1,8 @@
 #ifndef IMAGE_PANEL
 #define IMAGE_PANEL
 
-#include <wx/wx.h>
-#include "../utils/debug.hpp"
+#include "../include/wx.hpp"
+#include "../include/debug.hpp"
 
 class ImagePanel : public wxPanel {
 private:

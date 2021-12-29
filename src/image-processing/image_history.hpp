@@ -3,7 +3,6 @@
 
 #include <list>
 #include "image.hpp"
-#include "../utils/debug.hpp"
 
 class ImageHistory {
 private:

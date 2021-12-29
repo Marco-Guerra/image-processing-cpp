@@ -1,8 +1,7 @@
 #ifndef DIALOG
 #define DIALOG
 
-#include <wx/wxprec.h>
-#include <wx/wx.h>
+#include "../include/wx.hpp"
 
 enum DialogType {
 	DIALOG_ERROR,
