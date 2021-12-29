@@ -20,12 +20,12 @@ private:
 
 	wxBoxSizer *sizer;
 	wxMenu *menu_file;
-	wxMenu *menu_metods;
 	wxMenu *menu_filter;
 	wxMenu *menu_borders;
 	wxMenu *menu_histogram;
 	wxMenu *menu_transformation;
 	wxMenu *menu_noise;
+	wxMenu *menu_other_methods;
 	wxMenuBar *menu_bar;
 
 

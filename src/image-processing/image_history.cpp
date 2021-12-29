@@ -13,7 +13,7 @@ ImageHistory::ImageHistory(Image *fisrt) : history(), current() {
 	add(fisrt);
 }
 
-void ImageHistory::add(Image *fisrt) {
+void ImageHistory::add(Image *const fisrt) {
 	if (!isOnTop()) {
 		remove();
 	}

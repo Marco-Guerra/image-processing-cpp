@@ -6,12 +6,12 @@ MainFrame::MainFrame() :
 	drawPane(new ImagePanel(this, INITIAL_IMAGE, wxBITMAP_TYPE_JPEG)),
 	sizer(new wxBoxSizer(wxHORIZONTAL)),
 	menu_file(new wxMenu()),
-	menu_metods(new wxMenu()),
 	menu_filter(new wxMenu()),
 	menu_borders(new wxMenu()),
 	menu_histogram(new wxMenu()),
 	menu_transformation(new wxMenu()),
 	menu_noise(new wxMenu()),
+	menu_other_methods(new wxMenu()),
 	menu_bar(new wxMenuBar()) {
 
 	debug("Construindo MainFrame\n");
@@ -26,10 +26,6 @@ MainFrame::MainFrame() :
 	menu_file->AppendSeparator();
 	menu_file->Append(ID_UNDO, wxT("&Desfazer ação...\tCtrl-Z"), "Desfazer");
 	menu_file->Append(ID_REDO, wxT("&Refazer ação...\tCtrl-Y"), "Refazer");
-
-	menu_metods->Append(ID_ZEROCROSS, "&Realizar");
-	menu_metods->Append(ID_WATERSHED, "&Realizar");
-	menu_metods->Append(ID_COUNT, "&Realizar");
 
 	menu_filter->Append(ID_LOW_PASS,  "&Passa baixa");
 	menu_filter->Append(ID_HIGH_PASS, "&Passa alta");
@@ -48,13 +44,17 @@ MainFrame::MainFrame() :
 
 	menu_noise->Append(ID_NOISE, "&Adicionar ruido Salt and Peper");
 
+	menu_other_methods->Append(ID_ZEROCROSS, "&Realizar");
+	menu_other_methods->Append(ID_WATERSHED, "&Realizar Watershed");
+	menu_other_methods->Append(ID_COUNT, "&Contar objetos na imagem");
+
     menu_bar->Append(menu_file, "Imagem");
-    menu_bar->Append(menu_metods, wxT("Métodos"));
     menu_bar->Append(menu_filter, "Filtros");
     menu_bar->Append(menu_borders, "Detectando bordas");
     menu_bar->Append(menu_histogram, "Histograma");
     menu_bar->Append(menu_transformation, wxT("Transformações"));
     menu_bar->Append(menu_noise, wxT("Ruídos"));
+    menu_bar->Append(menu_other_methods, wxT("Outros"));
 
 	SetMenuBar(menu_bar);
 	CreateStatusBar();
@@ -113,7 +113,6 @@ void MainFrame::onSave(wxCommandEvent& event) {
 void MainFrame::onUndo(wxCommandEvent& event) {
 	if (img_history.previus()) {
 		updateImage();
-		Dialog dialog(this, "Desfazer executado com sucesso", DIALOG_INFO);
 	}else {
 		Dialog dialog (
 			this, 
@@ -126,12 +125,6 @@ void MainFrame::onUndo(wxCommandEvent& event) {
 void MainFrame::onRedo(wxCommandEvent& event) {
 	if (img_history.next()) {
 		updateImage();
-		Dialog dialog (
-			this,
-			"Refazer executado com sucesso",
-			DIALOG_INFO
-		);
-
 	}else {
 		Dialog dialog (
 			this,
@@ -250,7 +243,23 @@ void MainFrame::onThreshold(wxCommandEvent& event) {
 		);
 	}
 	const uint8_t menu_val = static_cast<uint8_t>(temp);
-	img_history.add(img_history.getCurrent()->threshold(menu_val));
+
+	int user_option = 0;
+	wxString options[] = {
+		wxString(wxT("Binário")),
+		wxString(wxT("Binário invertido")),
+		wxString("Truncamento para o valor de thresh"),
+		wxString("To zero"),
+		wxString("To zero invertido"),
+	};
+	wxSingleChoiceDialog get_mode (
+		this, "Qual modo do Threshold?", "Threshold Mode", 5, options
+	);
+	if (get_mode.ShowModal() == wxID_OK) {
+		user_option = get_mode.GetSelection();
+	}
+	
+	img_history.add(img_history.getCurrent()->threshold(menu_val, 255.0, user_option));
 	updateImage();
 	showDialog(wxT("Método de Limiarização executado com sucesso"), DIALOG_INFO);
 }
@@ -405,7 +414,22 @@ void MainFrame::onNoise(wxCommandEvent& event) {
 }
 
 void MainFrame::onWatershed(wxCommandEvent& event) {
-	
+	const auto new_image = img_history.getCurrent()->watershed();
+	if (new_image == nullptr) {
+		Dialog dialog (
+			this,
+			wxT("Falha ao executar Watershed"),
+			DIALOG_INFO
+		);
+	}else {
+		img_history.add(new_image);
+		updateImage();
+		Dialog dialog (
+			this,
+			wxT("Watershed realizado com sucesso"),
+			DIALOG_INFO
+		);
+	}
 }
 
 void MainFrame::onHistogram(wxCommandEvent& event) {
@@ -433,13 +457,20 @@ void MainFrame::onHistogramAjust(wxCommandEvent& event) {
 	updateImage();
 	Dialog dialog (
 		this,
-		wxT("ajuste da escala de cinsa usando histograma realizado com sucesso"),
+		wxT("Ajuste da escala de cinsa usando histograma realizado com sucesso"),
 		DIALOG_INFO
 	);
 }
 
 void MainFrame::onCount(wxCommandEvent& event) {
-	
+	uint16_t qnt_objs;
+	img_history.add(img_history.getCurrent()->count(qnt_objs));
+	updateImage();
+	Dialog info (
+		this,
+		"Quantidade de objetos encontrados = " + std::to_string(qnt_objs),
+		DIALOG_INFO
+	);
 }
 
 bool MainFrame::openImage() {
@@ -483,6 +514,8 @@ bool MainFrame::showDialog(const wxString &message, DialogType type) {
 	}else if (type == DIALOG_QUESTION) {
 		caption = wxT("Confirmação");
 		style = wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION;
+	}else {
+		return false;
 	}
 	wxMessageDialog dial (
 		this, message, caption, style

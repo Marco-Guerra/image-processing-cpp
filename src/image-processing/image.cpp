@@ -168,7 +168,15 @@ Image* Image::noise(const double noise_probability) const {
 	return dest;
 }
 
-Image* Image::watershed() const {}
+Image* Image::watershed() const {
+    if (mat.channels() != 1) {
+        std::cerr << "A imagem não está limiarizada\n";
+        return nullptr;
+    }
+    auto dest = new Image();
+
+	return dest;
+}
 
 Image* Image::histogram() const {
     // definições para gerar o histograma
@@ -248,7 +256,10 @@ Image* Image::histogramAjust() const {
     return dest;
 }
 
-Image* Image::count() const {}
+Image* Image::count(uint16_t &qnt) const {
+    qnt = 4;
+    return toGray();
+}
 
 const cv::Mat& Image::getMat() const { return mat; }
 

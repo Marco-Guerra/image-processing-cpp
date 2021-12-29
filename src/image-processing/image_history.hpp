@@ -12,7 +12,7 @@ private:
 	std::list<Image *>::const_iterator getLast();
 public:
 	ImageHistory();
-	ImageHistory(Image *fisrt);
+	ImageHistory(Image *const fisrt);
 
 	// Insere no fim da lista
 	void add(Image *fisrt);

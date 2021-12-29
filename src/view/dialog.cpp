@@ -13,9 +13,9 @@ long Dialog::getStyle(DialogType type) {
 	if (type == DIALOG_ERROR) {
 		return wxOK | wxICON_ERROR;
 	}else if (type == DIALOG_INFO) {
-		return wxOK;
+		return wxOK | wxICON_INFORMATION;
 	}
-	return wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION;
+	return wxYES_NO | wxYES_DEFAULT | wxICON_QUESTION;
 }
 
 Dialog::Dialog(wxFrame* parent, const wxString &message, DialogType type) :

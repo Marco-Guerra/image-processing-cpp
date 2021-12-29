@@ -49,7 +49,7 @@ public:
     Image* watershed() const;
     Image* histogram() const;
     Image* histogramAjust() const;
-    Image* count() const;
+    Image* count(uint16_t &qnt) const;
 
 	const cv::Mat &getMat() const;
 	wxImage toWxImage() const;
