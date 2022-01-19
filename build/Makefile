@@ -1,7 +1,6 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -fsanitize=address -Wall -Wextra -pedantic -O2
+CXXFLAGS=-std=c++17 -fsanitize=address -Wall -Wextra -pedantic -D DEBUG_VAR
 #-g 
-#-D DEBUG_VAR
 #-Werror
 LDFLAGS=-fsanitize=address
 LIBFLAGS=-lm

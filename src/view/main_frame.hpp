@@ -29,14 +29,14 @@ private:
 	wxMenuBar *menu_bar;
 
 
-// metodos que serao ligados a eventos
+// metodos que serão ligados a eventos
 	// file
 	void onOpen(wxCommandEvent& event);
 	void onSave(wxCommandEvent& event);
 	void onUndo(wxCommandEvent& event);
 	void onRedo(wxCommandEvent& event);
 
-	//metods
+	//methods
 	void onLowPass       (wxCommandEvent &event);
 	void onHighPass      (wxCommandEvent &event);
 	void onThreshold     (wxCommandEvent &event);
@@ -52,6 +52,7 @@ private:
 	void onHistogram     (wxCommandEvent &event);
 	void onHistogramAjust(wxCommandEvent &event);
 	void onCount         (wxCommandEvent &event);
+	void onLaplacian     (wxCommandEvent &event);
 
 	// metodos auxiliares
 	bool openImage();
@@ -71,7 +72,7 @@ enum Identifiers {
 	ID_UNDO,
 	ID_REDO,
 
-	// metods
+	// methods
 	ID_THRESHOLD,
 	ID_GRAY,
 	ID_LOW_PASS,
@@ -86,7 +87,8 @@ enum Identifiers {
 	ID_WATERSHED,
 	ID_HISTOGRAM,
 	ID_HISTOGRAM_AJUST,
-	ID_COUNT
+	ID_COUNT,
+	ID_LAPLACIAN
 };
 
 

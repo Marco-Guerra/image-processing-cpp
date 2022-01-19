@@ -4,13 +4,16 @@
             "name": "Linux",
             "includePath": [
                 "${default}",
-                "/usr/include/opencv4"
+                "/usr/include/opencv4",
+                "/usr/lib/wx/include/gtk2-unicode-3.0",
+                "/usr/include/wx-3.0"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4
