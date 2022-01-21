@@ -166,9 +166,6 @@ Image* Image::zerocross() const {
 	*/
 	cv::morphologyEx(dest->mat, min, cv::MORPH_ERODE, filter);
 	cv::morphologyEx(dest->mat, max, cv::MORPH_DILATE, filter);
-    std::cout << dest->mat.depth() << '\n';
-    std::cout << min.depth() << '\n';
-    std::cout << max.depth() << '\n';
 	
 	debug (max.rows << ',' << max.cols << '\n');
 	for (int i = 0; i < dest->mat.rows; i++) {
@@ -209,11 +206,17 @@ Image* Image::noise(const double noise_probability) const {
 }
 
 Image* Image::watershed() const {
-    if (mat.channels() != 1) {
-        std::cerr << "A imagem não está limiarizada\n";
-        return nullptr;
-    }
+    //if (mat.channels() != 1) {
+        //std::cerr << "A imagem não está limiarizada\n";
+        //return nullptr;
+    //}
     auto dest = new Image();
+    mat.convertTo(dest->mat, CV_32S);
+
+    // retorna uma imagem cinsa com 32 bits por pixel
+    cv::watershed(mat, dest->mat);
+    dest->mat.convertTo(dest->mat, CV_8U);
+    dest->mat = dest->toGrayMat();
 
 	return dest;
 }
@@ -297,8 +300,33 @@ Image* Image::histogramAjust() const {
 }
 
 Image* Image::count(uint16_t &qnt) const {
-    qnt = 4;
-    return toGray();
+    auto dest = new Image();
+    if (mat.channels() != 1) {
+        dest->mat = toGrayMat();
+        cv::threshold(dest->mat, dest->mat, 128, 255, cv::THRESH_BINARY);
+    }else {
+        dest->mat = mat.clone();
+    }
+
+    cv::Mat distance;
+
+	cv::distanceTransform(dest->mat, distance, cv::DIST_L2, 3);
+    distance.convertTo(distance, CV_8U); // garantindo que a imagem nao sai como float
+    cv::normalize(distance, distance, 0, 1, cv::NORM_MINMAX);
+    cv::threshold(distance, distance, 0.5, 1.0, cv::THRESH_BINARY);
+
+    std::vector<std::vector<cv::Point>> contours;
+	cv::findContours(distance, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    qnt = contours.size();
+
+    cv::Mat mark = cv::Mat::zeros(distance.size(), CV_32SC1);
+    for (int i = 0; i < qnt; i++) {
+		cv::drawContours(mark, contours, i, cv::Scalar::all(i+1), -1);
+    }
+    dest->mat = mark;
+    //cv::circle(mark, cv::Point(5,5), 3, COLOR_WHITE_SCALAR, -1);
+    
+    return dest;
 }
 
 Image* Image::laplacian(uint16_t kernal_size) const {

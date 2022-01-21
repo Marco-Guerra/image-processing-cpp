@@ -467,6 +467,15 @@ void MainFrame::onHistogramAjust(wxCommandEvent& event) {
 }
 
 void MainFrame::onCount(wxCommandEvent& event) {
+	{
+		Dialog question(
+			this,
+			wxT("Esse método só funciona com uma imagem limiarizada. Deseja continuar?"),
+			DIALOG_QUESTION);
+		if (!question.getUserInput()) {
+			return;
+		}
+	}
 	uint16_t qnt_objs;
 	img_history.add(img_history.getCurrent()->count(qnt_objs));
 	updateImage();

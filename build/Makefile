@@ -1,8 +1,10 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -fsanitize=address -pedantic -D DEBUG_VAR -Wall -Wextra -O2
+CXXFLAGS=-std=c++17 -D DEBUG_VAR -O2
+#-Wall -Wextra 
+#-fsanitize=address -pedantic 
 #-g 
 #-Werror
-LDFLAGS=-fsanitize=address
+#LDFLAGS=-fsanitize=address
 LIBFLAGS=-lm
 
 WX_CONFIG := wx-config
