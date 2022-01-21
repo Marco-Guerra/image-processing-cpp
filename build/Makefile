@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -fsanitize=address -Wall -Wextra -pedantic -D DEBUG_VAR
+CXXFLAGS=-std=c++17 -fsanitize=address -pedantic -D DEBUG_VAR -Wall -Wextra -O2
 #-g 
 #-Werror
 LDFLAGS=-fsanitize=address
@@ -26,6 +26,7 @@ SRC_DIR=../src
 SRC := $(wildcard $(SRC_DIR)/*/*.cpp)
 OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
 PCH := $(wildcard $(SRC_DIR)/include/*.hpp)
+PCH_OUT := $(patsubst $(SRC_DIR)/include/%.hpp, ./%.hpp.gch, $(PCH))
 
 EXEC=main.out
 
@@ -41,8 +42,10 @@ $(OBJ): $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 clean:
 	rm $(OBJ) $(EXEC)
 
-generate_pch:
-	$(CXX) $(CXXFLAGS) $(PCH)
+generate_pch: $(PCH_OUT)
+#$(CXX) $(CXXFLAGS) $(PCH)
+$(PCH_OUT): $(PCH)
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 run: all
 	./$(EXEC)

@@ -150,8 +150,12 @@ Image* Image::zerocross() const {
 	const cv::Mat filter = cv::getStructuringElement(cv::MORPH_RECT, {3, 3});
 	cv::Mat min, max;
     auto dest = toGray();
-	cv::Laplacian(mat, dest->mat, CV_16S, 3);
-	dest->mat = toGrayMat();
+	cv::Laplacian(mat, dest->mat, CV_16SC1, 3);
+    /*
+    dest->mat.convertTo(dest->mat, CV_8U);
+    cv::cvtColor(dest->mat, dest->mat, cv::COLOR_BGR2GRAY);
+    dest->mat.convertTo(dest->mat, CV_16S);
+    */
 	
 	/*
 	dest->mat.forEach<uint8_t>(
@@ -160,9 +164,11 @@ Image* Image::zerocross() const {
 		});
 	return dest;
 	*/
-
 	cv::morphologyEx(dest->mat, min, cv::MORPH_ERODE, filter);
 	cv::morphologyEx(dest->mat, max, cv::MORPH_DILATE, filter);
+    std::cout << dest->mat.depth() << '\n';
+    std::cout << min.depth() << '\n';
+    std::cout << max.depth() << '\n';
 	
 	debug (max.rows << ',' << max.cols << '\n');
 	for (int i = 0; i < dest->mat.rows; i++) {

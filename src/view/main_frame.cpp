@@ -35,6 +35,7 @@ MainFrame::MainFrame() :
 	menu_borders->Append(ID_PREWITT, wxT("&Método de Prewitt"));
 	menu_borders->Append(ID_SOBEL,   wxT("&Método de Sobel"));
 	menu_borders->Append(ID_CANNY,   wxT("&Método de canny"));
+	menu_borders->Append(ID_ZEROCROSS,   "&Realizar ZeroCross");
 
 	menu_histogram->Append(ID_HISTOGRAM, "&Obter o histograma da imagem");
 	menu_histogram->Append(ID_HISTOGRAM_AJUST, "&Ajustar a escala de cinsa");
@@ -45,7 +46,6 @@ MainFrame::MainFrame() :
 
 	menu_noise->Append(ID_NOISE, "&Adicionar ruido Salt and Pepper");
 
-	menu_other_methods->Append(ID_ZEROCROSS, "&Realizar ZeroCross");
 	menu_other_methods->Append(ID_WATERSHED, "&Realizar Watershed");
 	menu_other_methods->Append(ID_COUNT, "&Contar objetos na imagem");
 
@@ -339,7 +339,7 @@ void MainFrame::onLog(wxCommandEvent& event) {
 void MainFrame::onZerocross(wxCommandEvent& event) {
 	img_history.add(img_history.getCurrent()->zerocross());
 	updateImage();
-	showDialog(wxT("Método de Canny executado com sucesso"), DIALOG_INFO);
+	showDialog(wxT("Zerocross realizado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onCanny(wxCommandEvent& event) {
