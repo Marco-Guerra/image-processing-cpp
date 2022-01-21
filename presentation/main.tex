@@ -1,0 +1,55 @@
+\documentclass[12pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{graphicx}
+\graphicspath{{./images}}
+\usepackage{colortbl}
+\usepackage{color}
+\usepackage{cite}
+\usepackage{breqn}
+
+\definecolor{azul}{rgb}{0,0,.5}
+\setbeamertemplate{navigation symbols}{}
+
+\usetheme{Frankfurt}
+\usecolortheme[named=azul]{structure}
+
+%% Definindo o Autor e o título
+\newcommand{\prof}{Claudio R. M. Mauricio}
+\newcommand{\materia}{Processamento de Imagens Digitais}
+
+\author[Aluno:~Victor E. Almeida]{Victor Emanuel Almeida}
+
+\title{Apresentação de \materia}
+\subtitle{Demonstrando o software}
+\date{\today}
+\institute{UNIOESTE}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Conteúdo}
+\tableofcontents
+\end{frame}
+
+\section{Introdução}\label{Introdução}
+\begin{frame}
+    \frametitle{Softwares utilizados}
+    Ola Mundo\cite{docsWx}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Agradecimentos}
+    \centering
+    \Huge{Obrigado pela atenção}
+\end{frame}
+
+\section{Referências}\label{Referências}
+\begin{frame}[allowframebreaks]
+    \frametitle{Referências} 
+    \bibliography{ref}
+    \bibliographystyle{abbrv} % funciona
+\end{frame}
+
+\end{document}

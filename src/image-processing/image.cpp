@@ -142,11 +142,34 @@ Image* Image::log() const {
 	cv::log(dest->mat, dest->mat);
 	cv::normalize(dest->mat, dest->mat, 0, 255, cv::NORM_MINMAX);
 	cv::convertScaleAbs(dest->mat, dest->mat);
-    
+
     return dest;
 }
 
-Image* Image::zerocross() const {}
+Image* Image::zerocross() const {
+	const cv::Mat filter = cv::getStructuringElement(cv::MORPH_RECT, {3, 3});
+	cv::Mat min, max;
+	auto dest = laplacian(3);
+
+	cv::morphologyEx(dest->mat, min, cv::MORPH_ERODE, filter);
+	cv::morphologyEx(dest->mat, max, cv::MORPH_DILATE, filter);
+	
+	for (int i = 0; i < dest->mat.rows; i++) {
+		for (int j = 0; j < dest->mat.cols; j++) {
+			const auto actual_val = dest->mat.at<uint8_t>(i, j);
+			const auto min_val = min.at<uint8_t>(i, j);
+			const auto max_val = max.at<uint8_t>(i, j);
+
+			const bool is_min = (min_val < 0 && actual_val > 0);
+			const bool is_max = (max_val > 0 && actual_val < 0);
+			const bool resp = (is_min || is_max);
+			dest->mat.at<uint8_t>(i, j) = (resp? 255 : 0);
+		}
+	}
+	debug("Sai do for\n");
+	//cv::convertScaleAbs(dest->mat, dest->mat);
+	return dest;
+}
 
 Image* Image::noise(const double noise_probability) const {
     auto dest = new Image();
@@ -259,6 +282,13 @@ Image* Image::histogramAjust() const {
 Image* Image::count(uint16_t &qnt) const {
     qnt = 4;
     return toGray();
+}
+
+Image* Image::laplacian(uint16_t kernal_size) const {
+    auto dest = toGray();
+	cv::Laplacian(mat, dest->mat, CV_16S, kernal_size);
+	cv::convertScaleAbs(dest->mat, dest->mat);
+	return dest;
 }
 
 const cv::Mat& Image::getMat() const { return mat; }

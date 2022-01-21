@@ -41,10 +41,11 @@ MainFrame::MainFrame() :
 
 	menu_transformation->Append(ID_GRAY, wxT("&Transformar para escala de cinsa"));
 	menu_transformation->Append(ID_LOG,  wxT("&Transformação Logarítmica"));
+	menu_transformation->Append(ID_LAPLACIAN, wxT("&Transformação de Laplacian"));
 
-	menu_noise->Append(ID_NOISE, "&Adicionar ruido Salt and Peper");
+	menu_noise->Append(ID_NOISE, "&Adicionar ruido Salt and Pepper");
 
-	menu_other_methods->Append(ID_ZEROCROSS, "&Realizar");
+	menu_other_methods->Append(ID_ZEROCROSS, "&Realizar ZeroCross");
 	menu_other_methods->Append(ID_WATERSHED, "&Realizar Watershed");
 	menu_other_methods->Append(ID_COUNT, "&Contar objetos na imagem");
 
@@ -81,6 +82,7 @@ MainFrame::MainFrame() :
 	Bind(wxEVT_MENU, &MainFrame::onHistogram, this, ID_HISTOGRAM);
 	Bind(wxEVT_MENU, &MainFrame::onHistogramAjust, this, ID_HISTOGRAM_AJUST);
 	Bind(wxEVT_MENU, &MainFrame::onCount, this, ID_COUNT);
+	Bind(wxEVT_MENU, &MainFrame::onLaplacian, this, ID_LAPLACIAN);
 }
 
 void MainFrame::onOpen(wxCommandEvent& event) {
@@ -186,7 +188,7 @@ void MainFrame::onHighPass(wxCommandEvent& event) {
 			dialog.GetValue().ToLong(&temp);
 			if (temp % 2) break;
 		}else {
-			return; // o usuario cancelou o menu
+			return; // o usuário cancelou o menu
 		}
 		dialog.SetValue("3");
 		showDialog("O valor entrado precisa ser impar", DIALOG_ERROR);
@@ -335,7 +337,9 @@ void MainFrame::onLog(wxCommandEvent& event) {
 }
 
 void MainFrame::onZerocross(wxCommandEvent& event) {
-	
+	img_history.add(img_history.getCurrent()->zerocross());
+	updateImage();
+	showDialog(wxT("Método de Canny executado com sucesso"), DIALOG_INFO);
 }
 
 void MainFrame::onCanny(wxCommandEvent& event) {
@@ -469,6 +473,33 @@ void MainFrame::onCount(wxCommandEvent& event) {
 	Dialog info (
 		this,
 		"Quantidade de objetos encontrados = " + std::to_string(qnt_objs),
+		DIALOG_INFO
+	);
+}
+
+void MainFrame::onLaplacian (wxCommandEvent &event) {
+	long temp;
+	auto dialog = wxTextEntryDialog(
+		this,
+		wxT("Entre com o tamanho da matriz")
+	);
+	dialog.SetTextValidator(wxFILTER_DIGITS);
+	while (1) {
+		if (dialog.ShowModal() == wxID_OK) {
+			dialog.GetValue().ToLong(&temp);
+			if (temp % 2) break;
+		}else {
+			return; // o usuario cancelou o menu
+		}
+		dialog.SetValue("3");
+		showDialog("O valor entrado precisa ser impar", DIALOG_ERROR);
+	}
+	auto size = static_cast<uint16_t>(temp);
+	img_history.add(img_history.getCurrent()->laplacian(size));
+	updateImage();
+	Dialog info (
+		this,
+		wxT("Ajuste de Laplacian realizado com sucesso"),
 		DIALOG_INFO
 	);
 }

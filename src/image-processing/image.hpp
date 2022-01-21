@@ -50,6 +50,7 @@ public:
     Image* histogram() const;
     Image* histogramAjust() const;
     Image* count(uint16_t &qnt) const;
+    Image* laplacian(uint16_t kernal_size) const;
 
 	const cv::Mat &getMat() const;
 	wxImage toWxImage() const;
