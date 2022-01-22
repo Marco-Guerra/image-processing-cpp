@@ -147,42 +147,27 @@ Image* Image::log() const {
 }
 
 Image* Image::zerocross() const {
-	const cv::Mat filter = cv::getStructuringElement(cv::MORPH_RECT, {3, 3});
-	cv::Mat min, max;
-    auto dest = toGray();
-	cv::Laplacian(mat, dest->mat, CV_16SC1, 3);
-    /*
-    dest->mat.convertTo(dest->mat, CV_8U);
-    cv::cvtColor(dest->mat, dest->mat, cv::COLOR_BGR2GRAY);
-    dest->mat.convertTo(dest->mat, CV_16S);
-    */
-	
-	/*
-	dest->mat.forEach<uint8_t>(
-		[](uint8_t &pixel, const int* po) {
-			pixel = 128;
-		});
-	return dest;
-	*/
-	cv::morphologyEx(dest->mat, min, cv::MORPH_ERODE, filter);
-	cv::morphologyEx(dest->mat, max, cv::MORPH_DILATE, filter);
-	
-	debug (max.rows << ',' << max.cols << '\n');
-	for (int i = 0; i < dest->mat.rows; i++) {
-		for (int j = 0; j < dest->mat.cols; j++) {
-			const auto actual_val = dest->mat.at<int16_t>(i, j);
-			const auto min_val = min.at<int16_t>(i, j);
-			const auto max_val = max.at<int16_t>(i, j);
+    auto dest = new Image();
+    const auto &gray = toGrayMat();
 
-			const bool is_min = (min_val < 0 && actual_val > 0);
-			const bool is_max = (max_val > 0 && actual_val < 0);
-			const bool resp = (is_min || is_max);
-			dest->mat.at<int16_t>(i, j) = (resp? 255 : 0);
-		}
-	}
-	debug("Sai do for\n");
-	cv::convertScaleAbs(dest->mat, dest->mat);
-	return dest;
+    int8_t x_values[] = {
+        1, 0, -1,
+        1, 0, -1,
+        1, 0, -1
+    };
+    int8_t y_values[] = {
+        1,   1,  1,
+        0,   0,  0,
+        -1, -1, -1
+    };
+    const cv::Mat kx(cv::Size(3, 3), CV_8S, x_values);
+    const cv::Mat ky(cv::Size(3, 3), CV_8S, y_values);
+
+    cv::Mat temp_x, temp_y;
+    cv::filter2D(gray, temp_x, -1, kx);
+    cv::filter2D(gray, temp_y, -1, ky);
+    dest->mat = temp_x + temp_y;
+    return dest;
 }
 
 Image* Image::noise(const double noise_probability) const {
