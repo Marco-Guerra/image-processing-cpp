@@ -205,3 +205,6 @@ TSWLatexianTemp*
 # xwatermark package
 *.xwm
 *.out.ps
+
+*.synctex.gz
+*.fdb_latexmk

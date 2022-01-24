@@ -29,14 +29,14 @@ private:
 	wxMenuBar *menu_bar;
 
 
-// metodos que serão ligados a eventos
+// métodos que serão ligados a eventos
 	// file
-	void onOpen(wxCommandEvent& event);
-	void onSave(wxCommandEvent& event);
-	void onUndo(wxCommandEvent& event);
-	void onRedo(wxCommandEvent& event);
+	void onOpen(wxCommandEvent &event);
+	void onSave(wxCommandEvent &event);
+	void onUndo(wxCommandEvent &event);
+	void onRedo(wxCommandEvent &event);
 
-	//methods
+	// métodos que geram novas imagens
 	void onLowPass       (wxCommandEvent &event);
 	void onHighPass      (wxCommandEvent &event);
 	void onThreshold     (wxCommandEvent &event);
@@ -56,6 +56,7 @@ private:
 
 	// metodos auxiliares
 	bool openImage();
+	// cria dialogo com usuário ver dialog.hpp
 	bool showDialog(const wxString &message, DialogType type);
 	// Manda a imagem atual do img_history para a tela
 	void updateImage();
