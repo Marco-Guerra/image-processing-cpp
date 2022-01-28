@@ -39,15 +39,15 @@
     \begin{itemize}
     \item\textbf{Linguagem de programação}: C++;
     \item\textbf{Framework para interfaces gráficas}: wxWidgets\cite{docsWx};
-    \item\textbf{Framework para visão computacional}: opencv;
+    \item\textbf{Framework para visão computacional}: opencv\cite{docsCv};
     \end{itemize}
 \end{frame}
 
+\section{Estrutura do projeto}\label{Estrutura do projeto}
 \begin{frame}
-    \frametitle{Estrutura do projeto}
+    \frametitle{Principais classes}
     % Dentro da classe app que é a classe principal
     % Tem a chamada para o main frame...
-    Principais classes:
     \begin{itemize}
         \item App;
         \item MainFrame;
@@ -57,6 +57,16 @@
     \end{itemize}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Representando graficamente}
+
+    \begin{figure}
+        \includegraphics[width=\linewidth]{flow.png}
+    \end{figure}
+
+\end{frame}
+
+\section{Métodos disponíveis}\label{Métodos disponíveis}
 \begin{frame}
     \frametitle{Menus disponíveis na interface}
     \begin{itemize}
@@ -82,28 +92,85 @@
 
 \begin{frame}
     \frametitle{Menu Filtros}
+    \begin{itemize}
+        \item Passa baixa
+        \item Passa alta
+        \item Threshold
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Menu Detectando bordas}
+    \begin{itemize}
+        \item Método de Roberts
+        \item Método de Prewitt
+        \item Método de Sobel
+        \item Método de Canny
+        \item Realizar ZeroCross
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Menu Histograma}
+    \begin{itemize}
+        \item Obter o histograma da imagem
+        \item Ajustar a escala de cinsa
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Menu Transformações}
+    \begin{itemize}
+        \item Transformar para escala de cinsa
+        \item Transformação Logarítmica
+        \item Transformação de Laplacian
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Menu Ruídos}
+    \begin{itemize}
+        \item Adicionar ruido Salt and Pepper
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Menu Detecção objetos}
+    \begin{itemize}
+        \item Realizar Watershed
+        \item Contar objetos na imagem
+    \end{itemize}
 \end{frame}
 
+\section{Executando Projeto}
+\begin{frame}
+    \frametitle{Informações do projeto}
+    {\large Compilação}:
+    \begin{itemize}
+        \item \textbf{Sistema de compilação}: GNU make;
+        \item \textbf{Dependências}: shared libraries do opencv e wxWidgets;
+    \end{itemize}
+    {\large Plataformas}:
+    \begin{itemize}
+        \item Somente testado em sistemas GNU/Linux:
+        \begin{itemize}
+            \item Ubuntu 20.04.3 LTS;
+            \item Arch;
+        \end{itemize}
+        \item Não possui código que dependa de um SO expecífico;
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Compilando e executando}
+    \begin{enumerate}
+        \item Entrar na pasta build;
+        \item Executar ./setup\_(arch $|$ ubuntu).sh
+        \item Executar make run
+    \end{enumerate}
+\end{frame}
+
+\section{Conclusão}
 \begin{frame}
     \frametitle{Agradecimentos}
     \centering

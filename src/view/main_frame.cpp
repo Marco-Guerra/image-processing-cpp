@@ -34,7 +34,7 @@ MainFrame::MainFrame() :
 	menu_borders->Append(ID_ROBERTS, wxT("&Método de Roberts"));
 	menu_borders->Append(ID_PREWITT, wxT("&Método de Prewitt"));
 	menu_borders->Append(ID_SOBEL,   wxT("&Método de Sobel"));
-	menu_borders->Append(ID_CANNY,   wxT("&Método de canny"));
+	menu_borders->Append(ID_CANNY,   wxT("&Método de Canny"));
 	menu_borders->Append(ID_ZEROCROSS,   "&Realizar ZeroCross");
 
 	menu_histogram->Append(ID_HISTOGRAM, "&Obter o histograma da imagem");
