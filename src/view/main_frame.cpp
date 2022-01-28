@@ -55,7 +55,7 @@ MainFrame::MainFrame() :
     menu_bar->Append(menu_histogram, "Histograma");
     menu_bar->Append(menu_transformation, wxT("Transformações"));
     menu_bar->Append(menu_noise, wxT("Ruídos"));
-    menu_bar->Append(menu_other_methods, wxT("Outros"));
+    menu_bar->Append(menu_other_methods, wxT("Detecção objetos"));
 
 	SetMenuBar(menu_bar);
 	CreateStatusBar();
