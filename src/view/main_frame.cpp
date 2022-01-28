@@ -418,6 +418,12 @@ void MainFrame::onNoise(wxCommandEvent& event) {
 }
 
 void MainFrame::onWatershed(wxCommandEvent& event) {
+	Dialog info(
+		this,
+		wxT("Esse método está com problema e gerando segFoult, por isso está com a implementação comentada"),
+		DIALOG_INFO
+	);
+	/*
 	const auto new_image = img_history.getCurrent()->watershed();
 	if (new_image == nullptr) {
 		Dialog dialog (
@@ -434,6 +440,7 @@ void MainFrame::onWatershed(wxCommandEvent& event) {
 			DIALOG_INFO
 		);
 	}
+	*/
 }
 
 void MainFrame::onHistogram(wxCommandEvent& event) {
@@ -467,6 +474,12 @@ void MainFrame::onHistogramAjust(wxCommandEvent& event) {
 }
 
 void MainFrame::onCount(wxCommandEvent& event) {
+	Dialog info(
+		this,
+		wxT("Esse método está com problema e gerando segFoult, por isso está com a implementação comentada"),
+		DIALOG_INFO
+	);
+	/*
 	{
 		Dialog question(
 			this,
@@ -484,6 +497,7 @@ void MainFrame::onCount(wxCommandEvent& event) {
 		"Quantidade de objetos encontrados = " + std::to_string(qnt_objs),
 		DIALOG_INFO
 	);
+	*/
 }
 
 void MainFrame::onLaplacian (wxCommandEvent &event) {

@@ -1,5 +1,6 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -D DEBUG_VAR -O2
+CXXFLAGS=-std=c++17 -O2
+#-D DEBUG_VAR 
 #-Wall -Wextra 
 #-fsanitize=address -pedantic 
 #-g 
@@ -22,7 +23,6 @@ LIBFLAGS+=$(WX_LIBS)
 LIBFLAGS+=$(OPENCV_LIBS)
 
 OBJ_DIR=./objs
-#SRC_DIR := $(wildcard ../src/*)
 SRC_DIR=../src
 
 SRC := $(wildcard $(SRC_DIR)/*/*.cpp)
@@ -45,9 +45,12 @@ clean:
 	rm $(OBJ) $(EXEC)
 
 generate_pch: $(PCH_OUT)
-#$(CXX) $(CXXFLAGS) $(PCH)
 $(PCH_OUT): $(PCH)
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 run: all
+	./$(EXEC)
+
+deploy:
+	$(CXX) $(CXXFLAGS) $(SRC) -o $(EXEC) $(LIBFLAGS)
 	./$(EXEC)

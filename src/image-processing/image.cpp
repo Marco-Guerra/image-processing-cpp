@@ -196,12 +196,14 @@ Image* Image::watershed() const {
         //return nullptr;
     //}
     auto dest = new Image();
+    /*
     mat.convertTo(dest->mat, CV_32S);
 
     // retorna uma imagem cinsa com 32 bits por pixel
     cv::watershed(mat, dest->mat);
     dest->mat.convertTo(dest->mat, CV_8U);
     dest->mat = dest->toGrayMat();
+    */
 
 	return dest;
 }
@@ -286,6 +288,7 @@ Image* Image::histogramAjust() const {
 
 Image* Image::count(uint16_t &qnt) const {
     auto dest = new Image();
+    /*
     if (mat.channels() != 1) {
         dest->mat = toGrayMat();
         cv::threshold(dest->mat, dest->mat, 128, 255, cv::THRESH_BINARY);
@@ -310,6 +313,7 @@ Image* Image::count(uint16_t &qnt) const {
     }
     dest->mat = mark;
     //cv::circle(mark, cv::Point(5,5), 3, COLOR_WHITE_SCALAR, -1);
+    */
     
     return dest;
 }

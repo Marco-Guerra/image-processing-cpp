@@ -7,6 +7,7 @@
 \usepackage{color}
 \usepackage{cite}
 \usepackage{breqn}
+%\usepackage[clean]{svg}
 
 \definecolor{azul}{rgb}{0,0,.5}
 \setbeamertemplate{navigation symbols}{}
@@ -61,7 +62,8 @@
     \frametitle{Representando graficamente}
 
     \begin{figure}
-        \includegraphics[width=\linewidth]{flow.png}
+        \includegraphics[width=.9\linewidth]{flow.png}
+        %\includesvg[width=\linewidth]{flow.svg}
     \end{figure}
 
 \end{frame}
@@ -147,8 +149,9 @@
     \frametitle{Informações do projeto}
     {\large Compilação}:
     \begin{itemize}
-        \item \textbf{Sistema de compilação}: GNU make;
+        \item \textbf{Sistema de compilação}: GNU make chamando g++;
         \item \textbf{Dependências}: shared libraries do opencv e wxWidgets;
+        \item \textbf{Executável final}: main.out
     \end{itemize}
     {\large Plataformas}:
     \begin{itemize}
@@ -166,7 +169,7 @@
     \begin{enumerate}
         \item Entrar na pasta build;
         \item Executar ./setup\_(arch $|$ ubuntu).sh
-        \item Executar make run
+        \item Executar make (run $|$ deploy)
     \end{enumerate}
 \end{frame}
 
